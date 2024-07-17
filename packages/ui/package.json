@@ -8,7 +8,9 @@
   "exports": {
     "./styles.css": "./dist/index.css",
     "./cn": "./src/cn.ts",
-    "./header": "./src/header.tsx"
+    "./header": "./src/header.tsx",
+    "./user-profile-header": "./src/user-profile-header.tsx",
+    "./user-profile": "./src/user-profile.tsx"
   },
   "scripts": {
     "build": "tailwindcss -i ./src/styles.css -o ./dist/index.css",
@@ -18,6 +20,8 @@
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
+    "@repo/lib": "workspace:*",
+    "@repo/public-db": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@turbo/gen": "^1.12.4",
     "@types/eslint": "^8.56.5",
@@ -31,10 +35,11 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
-    "@auth0/nextjs-auth0": "^3.5.0",
+    "@radix-ui/react-dialog": "^1.1.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.408.0",
     "next": "15.0.0-rc.0",
+    "next-auth": "^4.24.7",
     "react": "^18.2.0",
     "tailwind-merge": "^2.4.0"
   }

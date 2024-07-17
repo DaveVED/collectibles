@@ -9,9 +9,12 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@auth0/nextjs-auth0": "^3.5.0",
+    "@repo/lib": "workspace:*",
+    "@repo/next-auth-db": "workspace:*",
+    "@repo/public-db": "workspace:*",
     "@repo/ui": "workspace:*",
     "next": "15.0.0-rc.0",
+    "next-auth": "^4.24.7",
     "react": "19.0.0-rc-f994737d14-20240522",
     "react-dom": "19.0.0-rc-f994737d14-20240522"
   },

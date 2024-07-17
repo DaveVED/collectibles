@@ -1,0 +1,29 @@
+{
+  "name": "@repo/public-db",
+  "version": "0.0.0",
+  "private": true,
+  "exports": {
+    "./queries": "./src/queries.ts",
+    "./inserts": "./src/inserts.ts",
+    "./schema": "./src/schema.ts",
+    "./updates": "./src/updates.ts"
+  },
+  "scripts": {
+    "lint": "eslint . --max-warnings 0"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@repo/next-auth-db": "workspace:*",
+    "@types/eslint": "^8.56.5",
+    "@types/node": "^20",
+    "eslint": "^8.57.0",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "drizzle-kit": "^0.22.8",
+    "drizzle-orm": "^0.31.4",
+    "postgres": "^3.4.4"
+  }
+}

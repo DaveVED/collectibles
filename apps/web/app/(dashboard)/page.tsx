@@ -1,3 +1,3 @@
-export default function Dashboard() {
-    return <main>Welcome to collectibles...</main>
+export default async function Dashboard() {
+  return <main>Hello World</main>;
 }
