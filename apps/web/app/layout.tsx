@@ -8,10 +8,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className="ui-h-full ui-w-full ui-overflow-y-auto">
+    <html lang="en" className="h-full w-full">
+      <body className="h-full w-full">
         <Header />
-        {children}
+        <div className="flex flex-col h-full">
+          {children}
+        </div>
       </body>
     </html>
   );

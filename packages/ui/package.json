@@ -10,7 +10,8 @@
     "./cn": "./src/cn.ts",
     "./header": "./src/header.tsx",
     "./user-profile-header": "./src/user-profile-header.tsx",
-    "./user-profile": "./src/user-profile.tsx"
+    "./user-profile": "./src/user-profile.tsx",
+    "./homepage": "./src/homepage.tsx"
   },
   "scripts": {
     "build": "tailwindcss -i ./src/styles.css -o ./dist/index.css",
