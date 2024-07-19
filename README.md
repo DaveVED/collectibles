@@ -2,6 +2,6 @@
 
 ## TODO
 
-- [ ] Enable it so edit profile only shows for that users.
-- [ ] Setup collections set, to start.
 - [ ] Profile picture.
+- [ ] When add a new collection the page is not re rendering.
+- [ ] Move to SWR where we can...

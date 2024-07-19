@@ -33,23 +33,26 @@ export const authOptions: NextAuthOptions = {
     async signIn({ user, account, profile, email, credentials }) {
       console.log(`User is ${JSON.stringify(user)}`);
       console.log(`Profile is ${JSON.stringify(profile)}`);
-      
+
       if (user.email) {
         const userEmail = user.email;
         const publicUser = await getUserByEmail(userEmail);
         if (!publicUser) {
-          console.log(`Could not find ${JSON.stringify(user)}, creating new user.`);
-          
+          console.log(
+            `Could not find ${JSON.stringify(user)}, creating new user.`,
+          );
+
           // todo: ensure username is not already taken.
-          const username = profile?.collectibles_username ?? generateRandomUsername();
-          
+          const username =
+            profile?.collectibles_username ?? generateRandomUsername();
+
           const newPublicUser: InsertUser = {
             name: username,
             email: user.email,
             image: user.image,
             next_auth_id: user.id,
             bio: "",
-            location: ""
+            location: "",
           };
 
           const createdUser = await createUser(newPublicUser);

@@ -1,21 +1,27 @@
 "use client";
 import Image from "next/image";
 import { SelectUser } from "@repo/public-db/schema";
-import { Edit3, MapPin, Calendar, Users, UserPlus } from 'lucide-react';
-import { useState } from 'react';
+import { Edit3, MapPin, Calendar, Users, UserPlus } from "lucide-react";
+import { useState } from "react";
 import { EditProfileModal } from "./edit-profile-modal";
+import { UserPropSession } from "./user-profile";
 
 interface UserProfileHeaderProps {
   userProfile: SelectUser;
+  session: UserPropSession;
 }
 
 export function UserProfileHeader({
+  session,
   userProfile,
 }: UserProfileHeaderProps) {
   const [open, setOpen] = useState(false);
 
-  const formattedDate = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(new Date(userProfile.joined));
-
+  const formattedDate = new Intl.DateTimeFormat("en-US", {
+    month: "long",
+    year: "numeric",
+  }).format(new Date(userProfile.joined));
+  const canEdit = userProfile.email === session?.user?.email;
   return (
     <div className="ui-flex ui-flex-col ui-items-center ui-bg-white ui-shadow-sm ui-rounded-lg ui-p-4 sm:ui-p-6 ui-gap-4 sm:ui-gap-6 ui-w-full sm:ui-flex-row">
       <div className="ui-flex-shrink-0 ui-flex ui-flex-col ui-items-center">
@@ -29,13 +35,15 @@ export function UserProfileHeader({
       </div>
       <div className="ui-flex-grow ui-flex ui-flex-col ui-items-center sm:ui-items-start">
         <div className="ui-flex ui-flex-col ui-items-center sm:ui-flex-row ui-justify-between ui-w-full">
-          <button
-            onClick={() => setOpen(true)}
-            className="ui-text-gray-500 hover:ui-text-gray-700 ui-flex ui-items-center ui-mb-2 sm:ui-mb-0 sm:ui-order-2 sm:ui-ml-2"
-          >
-            <Edit3 size={20} />
-            <span className="ui-ml-2">Edit Profile</span>
-          </button>
+          {canEdit && (
+            <button
+              onClick={() => setOpen(true)}
+              className="ui-text-gray-500 hover:ui-text-gray-700 ui-flex ui-items-center ui-mb-2 sm:ui-mb-0 sm:ui-order-2 sm:ui-ml-2"
+            >
+              <Edit3 size={20} />
+              <span className="ui-ml-2">Edit Profile</span>
+            </button>
+          )}
           <span className="ui-text-lg sm:ui-text-xl md:ui-text-2xl ui-font-semibold ui-text-gray-700 ui-mt-1 sm:ui-mt-0">
             @{userProfile.name}
           </span>
@@ -58,7 +66,11 @@ export function UserProfileHeader({
           </div>
         </div>
       </div>
-      <EditProfileModal open={open} setOpen={setOpen} userProfile={userProfile} />
+      <EditProfileModal
+        open={open}
+        setOpen={setOpen}
+        userProfile={userProfile}
+      />
     </div>
   );
 }

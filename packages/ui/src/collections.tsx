@@ -1,22 +1,62 @@
-"use client"
+"use client";
+import { useState } from "react";
 import { SelectUser } from "@repo/public-db/schema";
-import { Search } from 'lucide-react';
+import { UserPropSession } from "./user-profile";
 import { OwnedCollections } from "./owned-collections";
-import { OwnedCollectionsSearch } from "./owned-collections-serach";
+import { OwnedCollectionsSearch } from "./owned-collections-search";
+import { SelectedCollectionDisplay } from "./selected-collection-display";
 
+export interface CollectionDetails {
+  id: string;
+  collectionTypeName: string;
+  collectionTypeLanguage: string;
+  collectionTypeId: number;
+  userId: string;
+  createdAt: string;
+  active: boolean;
+}
 
 interface CollectionProps {
-    userProfile: SelectUser;
-  }
-  
-  
-export async function Collection({userProfile}: CollectionProps) {
-  // Function to handle adding a new collection
+  session: UserPropSession;
+  userProfile: SelectUser;
+  userCollections: CollectionDetails[];
+}
+
+export function Collection({
+  session,
+  userProfile,
+  userCollections: initialCollections,
+}: CollectionProps) {
+  const [userCollections, setUserCollections] =
+    useState<CollectionDetails[]>(initialCollections);
+  const [selectedCollectionName, setSelectedCollectionName] = useState<
+    string | undefined
+  >(undefined);
+
+  const handleSelectCollection = (name: string) => {
+    setSelectedCollectionName(name);
+  };
+
+  const handleAddCollection = (newCollection: CollectionDetails) => {
+    setUserCollections((prevCollections) => [
+      ...prevCollections,
+      newCollection,
+    ]);
+  };
 
   return (
     <div className="ui-mt-8">
-        <OwnedCollections userProfile={userProfile}/>
-        <OwnedCollectionsSearch />
-  </div>
+      <OwnedCollections
+        session={session}
+        userProfile={userProfile}
+        userCollections={userCollections}
+        onSelectCollection={handleSelectCollection}
+        onAddCollection={handleAddCollection}
+      />
+      <OwnedCollectionsSearch />
+      {selectedCollectionName && (
+        <SelectedCollectionDisplay collectionName={selectedCollectionName} />
+      )}
+    </div>
   );
 }

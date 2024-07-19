@@ -1,20 +1,29 @@
 import { SelectUser } from "@repo/public-db/schema";
 import { UserProfileHeader } from "./user-profile-header";
 import { Collection } from "./collections";
+import { Session } from "next-auth";
+import { CollectionDetails } from "./collections";
 
+export type UserPropSession = Session | undefined | null;
 interface UserProfileProps {
   userProfile: SelectUser;
+  session: UserPropSession;
+  userCollections: CollectionDetails[];
 }
 
-
-export async function UserProfile({ userProfile }: UserProfileProps) {
-  // Function to handle adding a new collection
-
-
+export function UserProfile({
+  userProfile,
+  session,
+  userCollections,
+}: UserProfileProps) {
   return (
     <div className="ui-container ui-mx-auto ui-mt-16 ui-max-w-2xl ui-px-4">
-      <UserProfileHeader userProfile={userProfile} />
-      <Collection userProfile={userProfile}/>
+      <UserProfileHeader session={session} userProfile={userProfile} />
+      <Collection
+        session={session}
+        userProfile={userProfile}
+        userCollections={userCollections}
+      />
     </div>
   );
 }

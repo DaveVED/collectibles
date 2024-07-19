@@ -1,11 +1,11 @@
 "use client";
 
-import * as Dialog from '@radix-ui/react-dialog';
-import { useState } from 'react';
-import Image from 'next/image';
+import * as Dialog from "@radix-ui/react-dialog";
+import { useState } from "react";
+import Image from "next/image";
 import { SelectUser } from "@repo/public-db/schema";
-import { X } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { X } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface EditProfileModalProps {
   open: boolean;
@@ -19,20 +19,29 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
   userProfile,
 }) => {
   const [name, setName] = useState(userProfile.name);
-  const [bio, setBio] = useState(userProfile.bio || '');
-  const [location, setLocation] = useState(userProfile.location || '');
+  const [bio, setBio] = useState(userProfile.bio || "");
+  const [location, setLocation] = useState(userProfile.location || "");
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
   const handleSave = async () => {
     // Check if any field has changed
-    if (name !== userProfile.name || bio !== userProfile.bio || location !== userProfile.location) {
+    if (
+      name !== userProfile.name ||
+      bio !== userProfile.bio ||
+      location !== userProfile.location
+    ) {
       // Logic to save updated profile details
-      const result = await updateUserProfile({ id: userProfile.id, name, bio, location });
-      if (result?.message === 'User already exists') {
-        setError('User already exists. Please choose a different username.');
-      } else if (result?.message === 'User not found') {
-        setError('User not found. Please try again.');
+      const result = await updateUserProfile({
+        id: userProfile.id,
+        name,
+        bio,
+        location,
+      });
+      if (result?.message === "User already exists") {
+        setError("User already exists. Please choose a different username.");
+      } else if (result?.message === "User not found") {
+        setError("User not found. Please try again.");
       } else {
         router.push(`/collector/${name}`);
         setOpen(false);
@@ -40,13 +49,18 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
     }
   };
 
-  const updateUserProfile = async (updatedProfile: { id: string, name: string, bio: string, location: string }) => {
+  const updateUserProfile = async (updatedProfile: {
+    id: string;
+    name: string;
+    bio: string;
+    location: string;
+  }) => {
     console.log(`Before update: ${JSON.stringify(userProfile)}`);
     try {
-      const response = await fetch('/api/user', {
-        method: 'POST',
+      const response = await fetch("/api/user", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(updatedProfile),
       });
@@ -60,7 +74,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
         return errorData;
       }
     } catch (error) {
-      console.error('Error updating profile:', error);
+      console.error("Error updating profile:", error);
     }
   };
 
@@ -77,16 +91,26 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
               <div className="ui-flex ui-items-center ui-justify-between ui-mb-4">
                 <Dialog.Close asChild>
                   <button>
-                    <X size={24} className="ui-text-gray-500 hover:ui-text-gray-700" />
+                    <X
+                      size={24}
+                      className="ui-text-gray-500 hover:ui-text-gray-700"
+                    />
                   </button>
                 </Dialog.Close>
-                <span className="ui-text-xl ui-font-semibold">Edit Profile</span>
-                <button onClick={handleSave} className="ui-px-4 ui-py-2 ui-bg-purple-500 ui-text-white ui-rounded hover:ui-bg-purple-600">
+                <span className="ui-text-xl ui-font-semibold">
+                  Edit Profile
+                </span>
+                <button
+                  onClick={handleSave}
+                  className="ui-px-4 ui-py-2 ui-bg-purple-500 ui-text-white ui-rounded hover:ui-bg-purple-600"
+                >
                   Save
                 </button>
               </div>
             </div>
-            {error && <div className="ui-mb-4 ui-text-red-500 ui-px-6">{error}</div>}
+            {error && (
+              <div className="ui-mb-4 ui-text-red-500 ui-px-6">{error}</div>
+            )}
             <div className="ui-flex ui-flex-col ui-items-center ui-mb-4 ui-px-6">
               <Image
                 src={userProfile.image!}

@@ -12,36 +12,34 @@ CREATE TABLE IF NOT EXISTS public.users (
 );
 
 -- Create collections lookup table
-CREATE TABLE IF NOT EXISTS public.collection_types (
+CREATE TABLE public.collection_types (
     id SERIAL PRIMARY KEY,
-    name TEXT UNIQUE
+    name TEXT,
+    language TEXT,
+    UNIQUE (name, language)
 );
 
--- Populate the lookup table with predefined collection types
-INSERT INTO public.collection_types (name) VALUES
-    ('scarlet-and-violet'),
-    ('romance-dawn');
+-- English collections
+INSERT INTO public.collection_types (name, language) VALUES
+('[OP-01] ROMANCE DAWN', 'English'),
+('[OP-02] PARAMOUNT WAR', 'English'),
+('[OP-05] Awakening of the New Era', 'English'),
+('[SV] Scarlet & Violet 151', 'English');
+
+-- Japanese collections
+INSERT INTO public.collection_types (name, language) VALUES
+('[OP-01] ROMANCE DAWN', 'Japanese'),
+('[OP-02] PARAMOUNT WAR', 'Japanese'),
+('[OP-05] Awakening of the New Era', 'Japanese'),
+('[SV] Scarlet & Violet 151', 'Japanese');
 
 -- Create collections table with reference to collection types
 CREATE TABLE IF NOT EXISTS public.collections (
-    id SERIAL PRIMARY KEY,
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
     collection_type_id INTEGER REFERENCES public.collection_types(id),
-    user_id INTEGER REFERENCES public.users(id) ON DELETE CASCADE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Example insertion of a collection
-INSERT INTO public.collections (collection_type_id, user_id)
-VALUES
-    (1, 1);  -- Assuming scarlet-and-violet (ID=1) owned by user with ID=1
-
-    CREATE TABLE IF NOT EXISTS public.cards (
-    id SERIAL PRIMARY KEY,
-    collection_id INTEGER REFERENCES public.collections(id),
-    name TEXT,
-    description TEXT,
-    image_url TEXT,
-    // Add more columns as needed
+    user_id UUID REFERENCES public.users(id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    active BOOLEAN DEFAULT TRUE
 );
 
 CREATE TABLE IF NOT EXISTS public.users_cards (
@@ -51,23 +49,4 @@ CREATE TABLE IF NOT EXISTS public.users_cards (
     // Optionally, add additional columns like quantity owned, purchase date, etc.
 );
 
-INSERT INTO public.collections (collection_type_id, user_id)
-VALUES
-    (1, 1);  -- Assuming collection type (scarlet-and-violet) with ID=1, owned by user with ID=1
-
--- Inserting cards into a collection
-INSERT INTO public.cards (collection_id, name, description, image_url)
-VALUES
-    (1, 'Card 1', 'Description of Card 1', '/images/card1.jpg'),
-    (1, 'Card 2', 'Description of Card 2', '/images/card2.jpg');
-
--- Assuming user with ID=1 owns Card 1 and Card 2 from Collection 1
-INSERT INTO public.users_cards (user_id, card_id)
-VALUES
-    (1, 1),  -- User 1 owns Card 1
-    (1, 2);  -- User 1 owns Card 2
-
 ```
-
-
-

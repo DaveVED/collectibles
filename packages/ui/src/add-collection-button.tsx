@@ -1,20 +1,23 @@
-// AddCollectionButton.tsx
 "use client";
-import { useState } from 'react';
+import { useState } from "react";
 import { SelectUser } from "@repo/public-db/schema";
-import { Plus } from 'lucide-react';
-import { AddCollectionModal } from './add-collection-modal';
+import { Plus } from "lucide-react";
+import { AddCollectionModal } from "./add-collection-modal";
+import { CollectionDetails } from "./collections";
 
 interface AddCollectionButtonProps {
   userProfile: SelectUser;
+  onAddCollection: (newCollection: CollectionDetails) => void;
 }
 
-export function AddCollectionButton({ userProfile }: AddCollectionButtonProps) {
+export function AddCollectionButton({
+  userProfile,
+  onAddCollection,
+}: AddCollectionButtonProps) {
   const [openModal, setOpenModal] = useState(false);
 
   const handleAddCollection = () => {
-
-    setOpenModal(true); 
+    setOpenModal(true);
   };
 
   return (
@@ -26,7 +29,12 @@ export function AddCollectionButton({ userProfile }: AddCollectionButtonProps) {
         <Plus className="ui-mr-2" size={20} />
         <span className="hidden sm:inline">Add Collection</span>
       </button>
-      <AddCollectionModal open={openModal} setOpen={setOpenModal} userProfile={userProfile} />
+      <AddCollectionModal
+        open={openModal}
+        setOpen={setOpenModal}
+        userProfile={userProfile}
+        onAddCollection={onAddCollection}
+      />
     </>
   );
 }

@@ -7,7 +7,7 @@ export type UpdateUser = {
   name: string;
   bio: string;
   location: string;
-}
+};
 export async function updateUserBasicDetails(user: UpdateUser): Promise<any> {
   if (!user.id) {
     throw new Error("User ID is required for updating a user");
