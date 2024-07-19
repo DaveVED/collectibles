@@ -38,6 +38,24 @@ export const collectionsTable = pgTable("collections", {
   active: boolean("active").default(true),
 });
 
+export const opCardTypesTable = pgTable("op_card_types", {
+  id: serial("id").primaryKey(),
+  type_name: text("type_name").unique()
+});
+
+export const opCardsTable = pgTable("op_cards", {
+  id: uuid("id").primaryKey().default("uuid_generate_v4()"),
+  name: text("name"),
+  card_type_id: integer("card_type_id").references(() => opCardTypesTable.id),
+  collection_type_id: integer("collection_type_id").references(() => collectionTypesTable.id),
+});
+
+export const userCardsTable = pgTable("users_cards", {
+  id: uuid("id").primaryKey().default("uuid_generate_v4()"),
+  user_id: uuid("user_id").references(() => usersTable.id),
+  card_id: uuid("card_id").references(() => opCardsTable.id),
+});
+
 export type InsertUser = typeof usersTable.$inferInsert;
 export type SelectUser = typeof usersTable.$inferSelect;
 
@@ -46,3 +64,12 @@ export type SelectCollectionTypes = typeof collectionTypesTable.$inferSelect;
 
 export type InsertCollections = typeof collectionsTable.$inferInsert;
 export type SelectCollections = typeof collectionsTable.$inferSelect;
+
+export type InsertOpCardTypes = typeof opCardTypesTable.$inferInsert;
+export type SelectOpCardTypes = typeof opCardTypesTable.$inferSelect;
+
+export type InsertOpCards = typeof opCardsTable.$inferInsert;
+export type SelectOpCards= typeof opCardsTable.$inferSelect;
+
+export type InsertUserCards= typeof userCardsTable.$inferInsert;
+export type SelectUserCards= typeof userCardsTable.$inferSelect;
