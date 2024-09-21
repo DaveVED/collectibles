@@ -1,8 +1,8 @@
-# Collectibles Cards Scripts
+# Collectibles TCG Bot
 
-Some scripts for card data. If you just want to work with the scripts you can use the local `shell.nix` file to get started.
+The collectibles platform relys on TCG card reference data (and price). This bot scrapes the [TCG Player](https://www.tcgplayer.com/) site for the intial load of reference data, and to keep data up to date (ie price). Data is stored and can be referenced using our API.
 
-## Move me 
+## Storage Schema 
 
 Table Name: TCG_Cards
 Primary Key:
@@ -100,3 +100,6 @@ Handling Future Expansions:
     Adding New Sets: Include the new SetCode and SetName as needed.
     Adding New Attributes: DynamoDB's schema-less design allows you to add new attributes without modifying existing items.
 
+## ???
+https://www.tcgplayer.com/sitemap/index.xml
+https://www.tcgplayer.com/sitemap/one-piece-card-game.0.xml
