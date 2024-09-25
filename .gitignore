@@ -12,3 +12,7 @@ server/dist
 public/dist
 .turbo
 .venv
+.vscode
+__pycache__
+logs/
+*.log
