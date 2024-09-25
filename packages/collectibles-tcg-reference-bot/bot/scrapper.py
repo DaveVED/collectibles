@@ -121,8 +121,12 @@ def process_row(col_data, url, set_name, logger):
             set_code = set_code_match.group(1)  # e.g., OP01
             card_number = set_code_match.group(2)  # e.g., 064
         else:
-            set_code = "UNKNOWN"
-            card_number = "UNKNOWN"
+            if "DON" in product_name or "DON" in rarity:
+                set_code = "DON"
+                card_number = "DON"
+            else:
+                set_code = "UNKNOWN"
+                card_number = "UNKNOWN"
 
         # Convert price string to Decimal
         price = Decimal(price_str.replace('$', '').replace(',', ''))
