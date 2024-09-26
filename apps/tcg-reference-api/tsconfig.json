@@ -6,7 +6,8 @@
         "target": "esnext",
         "moduleResolution": "nodenext",
         "allowSyntheticDefaultImports": true,
-        "outDir": "./dist"
+        "outDir": "./dist",
+        "resolveJsonModule": true,
     },
     "exclude": ["node_modules"],
     "include": ["."]

@@ -1135,3 +1135,25 @@ Key Takeaways:
     Security and Reliability: Ensure your API is secure, monitored, and well-documented.
 
 Feel free to expand upon these endpoints and practices based on evolving requirements and additional features. If you have further questions or need more detailed implementations, don’t hesitate to ask!
+
+
+import { defineConfig, Options } from 'tsup';
+
+export default defineConfig((options: Options) => {
+  const isLambda = process.env.BUILD_ENV === 'lambda';
+
+  return {
+    entryPoints: isLambda ? ['src/lambda.ts'] : ['src/app.local.ts'],
+    clean: true,
+    format: ['cjs'],
+    minify: isLambda,
+    bundle: true,
+    target: 'node18',
+    outDir: 'dist',
+    external: isLambda ? ['aws-sdk'] : [], // Only exclude aws-sdk for Lambda
+    sourcemap: isLambda, // Disable sourcemaps for Lambda
+    dts: false, // Disable TypeScript declarations for Lambda
+    splitting: false, // Disable code splitting
+    ...options,
+  };
+});

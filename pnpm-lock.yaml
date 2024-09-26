@@ -84,7 +84,13 @@ importers:
       morgan:
         specifier: ^1.10.0
         version: 1.10.0
+      source-map-support:
+        specifier: 0.5.21
+        version: 0.5.21
     devDependencies:
+      '@codegenie/serverless-express':
+        specifier: 4.15.0
+        version: 4.15.0
       '@collectibles/eslint-config':
         specifier: workspace:*
         version: link:../../packages/collectibles-eslint-config
@@ -507,6 +513,10 @@ packages:
 
   '@changesets/write@0.3.0':
     resolution: {integrity: sha512-slGLb21fxZVUYbyea+94uFiD6ntQW0M2hIKNznFizDhZPDgn2c/fv1UzzlW43RVzh1BEDuIqW6hzlJ1OflNmcw==}
+
+  '@codegenie/serverless-express@4.15.0':
+    resolution: {integrity: sha512-adnKbnW1Tg5LAe0lcbyoRchu8G6+gLwP1rvgwfHvTbCwvBQNfhsgnzq4cKkLn7ZKn2sa4JZNis/Gn/2jWBWa4A==}
+    engines: {node: '>=12'}
 
   '@esbuild/aix-ppc64@0.21.5':
     resolution: {integrity: sha512-1SDgH6ZSPTlggy1yI6+Dbkiz8xzpHJEVAlF/AM1tHPLsf5STom9rwtjE4hKAF20FfXXNTFqEYXyJNWh1GiZedQ==}
@@ -3667,6 +3677,9 @@ packages:
   source-map-support@0.5.13:
     resolution: {integrity: sha512-SHSKFHadjVA5oR4PPqhtAVdcBWwRYVd6g6cAXnIbRiIwc2EhPrTuKUBdSLvlEKyIP3GCf89fltvcZiP9MMFA1w==}
 
+  source-map-support@0.5.21:
+    resolution: {integrity: sha512-uBHU3L3czsIyYXKX88fdrGovxdSCoTGDRZ6SYXtSRxLZUzHg5P/66Ht6uoUlHu9EZod+inXhKo3qQgwXUT/y1w==}
+
   source-map@0.6.1:
     resolution: {integrity: sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g==}
     engines: {node: '>=0.10.0'}
@@ -4685,6 +4698,8 @@ snapshots:
       fs-extra: 7.0.1
       human-id: 1.0.2
       prettier: 2.8.8
+
+  '@codegenie/serverless-express@4.15.0': {}
 
   '@esbuild/aix-ppc64@0.21.5':
     optional: true
@@ -8249,6 +8264,11 @@ snapshots:
   source-map-js@1.2.1: {}
 
   source-map-support@0.5.13:
+    dependencies:
+      buffer-from: 1.1.2
+      source-map: 0.6.1
+
+  source-map-support@0.5.21:
     dependencies:
       buffer-from: 1.1.2
       source-map: 0.6.1
