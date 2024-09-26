@@ -1157,3 +1157,1046 @@ export default defineConfig((options: Options) => {
     ...options,
   };
 });
+
+
+Base URL and Versioning
+
+    Base URL: https://api.yourdomain.com/v1
+
+Endpoints Overview
+1. Health and Metadata Endpoints
+
+    GET /v1/health
+
+        Description: Check the health status of the API.
+
+        Response Example:
+
+        json
+
+    {
+      "status": "ok",
+      "timestamp": "2024-09-21T14:00:00Z"
+    }
+
+GET /v1
+
+    Description: Retrieve API metadata, such as available endpoints, version, and documentation links.
+
+    Response Example:
+
+    json
+
+        {
+          "version": "v1",
+          "endpoints": [
+            "/v1/sets",
+            "/v1/sets/{setCode}",
+            "/v1/sets/{setCode}/cards",
+            "/v1/cards",
+            "/v1/cards/{setCode}/{cardNumber}",
+            "/v1/cards/search",
+            "/v1/health"
+          ],
+          "documentation": "https://docs.yourdomain.com/api/v1"
+        }
+
+2. Sets Endpoints
+
+    GET /v1/sets
+        Description: Retrieve a paginated list of all card sets.
+        Query Parameters (optional):
+            game: Filter sets by game name (e.g., OnePiece, Pokemon).
+            limit: Number of items per page (default: 20, max: 100).
+            nextToken: Token for pagination.
+            sortBy: Attribute to sort by (e.g., releaseDate, setName).
+            order: Sorting order (asc or desc).
+
+    GET /v1/sets/{setCode}
+        Description: Retrieve detailed information about a specific set identified by its setCode.
+        Path Parameters:
+            setCode: Unique identifier for the set (e.g., OP02).
+
+    POST /v1/sets
+
+        Description: Create a new card set. (Typically restricted to administrative users.)
+
+        Request Body:
+
+        json
+
+        {
+          "setCode": "OP03",
+          "setName": "New Adventures",
+          "game": "OnePiece",
+          "releaseDate": "2024-09-01"
+        }
+
+3. Cards Endpoints
+
+    GET /v1/cards
+        Description: Retrieve a paginated list of all cards, with optional filtering and sorting.
+        Query Parameters (optional):
+            game: Filter cards by game name.
+            setCode: Filter cards by set code.
+            rarity: Filter cards by rarity (e.g., Common, Rare).
+            priceMin: Minimum price to filter cards.
+            priceMax: Maximum price to filter cards.
+            limit: Number of items per page.
+            nextToken: Token for pagination.
+            sortBy: Attribute to sort by (e.g., price, cardName).
+            order: Sorting order (asc or desc).
+
+    GET /v1/cards/{setCode}/{cardNumber}
+        Description: Retrieve detailed information about a specific card identified by its setCode and cardNumber.
+        Path Parameters:
+            setCode: Identifier for the set (e.g., OP02).
+            cardNumber: Unique number of the card within the set (e.g., 001).
+
+    POST /v1/cards
+
+        Description: Create a new card. (Typically restricted to administrative users.)
+
+        Request Body:
+
+        json
+
+        {
+          "setCode": "OP02",
+          "cardNumber": "002",
+          "cardName": "Zoro",
+          "rarity": "Common",
+          "price": 10.00,
+          "metadata": {
+            "abilities": ["Santoryu", "Haki"],
+            "description": "Roronoa Zoro, the swordsman of the Straw Hat Pirates..."
+          }
+        }
+
+    GET /v1/sets/{setCode}/cards
+        Description: Retrieve all cards belonging to a specific set.
+        Path Parameters:
+            setCode: Identifier for the set.
+        Query Parameters (optional):
+            limit: Number of items per page.
+            nextToken: Token for pagination.
+            sortBy: Attribute to sort by (e.g., cardNumber, cardName).
+            order: Sorting order (asc or desc).
+
+    GET /v1/cards/search
+        Description: Provide advanced search capabilities for cards.
+        Query Parameters:
+            query: Search term for card names or descriptions.
+            game, setCode, rarity, priceMin, priceMax, etc.: Additional filters.
+            limit: Number of items per page.
+            nextToken: Token for pagination.
+            sortBy: Attribute to sort by.
+            order: Sorting order (asc or desc).
+
+4. Additional Endpoints
+
+    GET /v1/games (Optional)
+
+        Description: Retrieve a list of supported games.
+
+        Response Example:
+
+        json
+
+        {
+          "games": ["OnePiece", "Pokemon", "MagicTheGathering"]
+        }
+
+Summary of Endpoints
+
+Here's a summarized list for quick reference:
+
+    Health and Metadata:
+        GET /v1/health
+        GET /v1
+
+    Sets:
+        GET /v1/sets
+        GET /v1/sets/{setCode}
+        POST /v1/sets
+        GET /v1/sets/{setCode}/cards
+
+    Cards:
+        GET /v1/cards
+        GET /v1/cards/{setCode}/{cardNumber}
+        POST /v1/cards
+        GET /v1/cards/search
+
+    Games (Optional):
+        GET /v1/games
+
+Descriptions and Usage
+1. Health and Metadata
+
+    GET /v1/health
+        Use this endpoint to check if the API is running and healthy.
+
+    GET /v1
+        Retrieve general information about the API, including available endpoints and documentation links.
+
+2. Sets
+
+    GET /v1/sets
+        Fetch a list of all card sets. Use query parameters to filter and sort the results.
+
+    GET /v1/sets/{setCode}
+        Get detailed information about a specific set, including its associated cards if needed.
+
+    POST /v1/sets
+        Create a new set. Access to this endpoint should be secured and limited to authorized users.
+
+    GET /v1/sets/{setCode}/cards
+        Retrieve all cards within a specific set. Useful for clients that want to display all cards from a set.
+
+3. Cards
+
+    GET /v1/cards
+        Retrieve a list of cards across all sets and games. Supports filtering, sorting, and pagination.
+
+    GET /v1/cards/{setCode}/{cardNumber}
+        Fetch detailed information about a specific card.
+
+    POST /v1/cards
+        Create a new card. Should be restricted to authorized users.
+
+    GET /v1/cards/search
+        Perform advanced searches on cards using various criteria.
+
+4. Games (Optional)
+
+    GET /v1/games
+        Retrieve a list of all supported games. This can help clients dynamically display available games.
+
+        // src/controllers/cardsController.ts
+
+import { Request, Response } from "express";
+import { getCardsBySetCodeAndCardNumber } from "../services/cardsService";
+
+export const getCards = async (req: Request, res: Response) => {
+  try {
+    const { setCode, cardNumber } = req.params;
+
+    if (!setCode || !cardNumber) {
+      res.setHeader("Content-Type", "application/vnd.api+json");
+      res.status(400).json({
+        errors: [
+          {
+            status: "400",
+            title: "Bad Request",
+            detail: "setCode and cardNumber are required path parameters.",
+          },
+        ],
+      });
+      return;
+    }
+
+    const gameName = "OnePiece"; // Adjust as needed
+    const items = await getCardsBySetCodeAndCardNumber(
+      gameName,
+      setCode,
+      cardNumber
+    );
+
+    res.setHeader("Content-Type", "application/vnd.api+json");
+
+    if (items && items.length > 0) {
+      const cards = items.map((item) => ({
+        type: "cards",
+        id: item.SK,
+        attributes: {
+          SetID: item.SetID,
+          CardName: item.CardName,
+          // ... other attributes
+        },
+      }));
+
+      res.status(200).json({ data: cards });
+    } else {
+      res.status(404).json({
+        errors: [
+          {
+            status: "404",
+            title: "Not Found",
+            detail: "Card not found.",
+          },
+        ],
+      });
+    }
+  } catch (error) {
+    console.error("Error in getCards:", error);
+    res.setHeader("Content-Type", "application/vnd.api+json");
+    res.status(500).json({
+      errors: [
+        {
+          status: "500",
+          title: "Internal Server Error",
+          detail: "An error occurred while retrieving the card.",
+        },
+      ],
+    });
+  }
+};
+
+
+// src/services/cardsService.ts
+
+import { docClient } from "../clients/awsClients";
+import { QueryCommand } from "@aws-sdk/lib-dynamodb";
+import { TABLE_NAME } from "../config";
+
+export const getCardsBySetCodeAndCardNumber = async (
+  gameName: string,
+  setCode: string,
+  cardNumber: string
+) => {
+  const pk = `${gameName}#${setCode.toUpperCase()}`;
+  const skPrefix = `CARD#${cardNumber}#`;
+
+  const params = {
+    TableName: TABLE_NAME,
+    KeyConditionExpression: "SetID = :pk AND begins_with(SK, :skPrefix)",
+    ExpressionAttributeValues: {
+      ":pk": pk,
+      ":skPrefix": skPrefix,
+    },
+  };
+
+  const command = new QueryCommand(params);
+  const response = await docClient.send(command);
+  return response.Items;
+};
+
+Implementing the /v1 and /v1/games Endpoints Following JSON API Best Practices
+
+Objective:
+
+Create the /v1 and /v1/games endpoints in your Express.js application, adhering to the JSON API specification. These endpoints will:
+
+    GET /v1: Provide API metadata, such as available endpoints and documentation links.
+    GET /v1/games: Return a list of supported games.
+
+1. Setting Up the Endpoints
+1.1. Define the Routes
+
+Create a new route file for versioning and games:
+
+    src/routes/versionRoutes.ts for the /v1 endpoint.
+    src/routes/gamesRoutes.ts for the /v1/games endpoint.
+
+1.2. Update the Server Configuration
+
+Ensure your main server file includes these new routes.
+2. Implementing the /v1 Endpoint
+2.1. Route Definition
+
+src/routes/versionRoutes.ts
+
+typescript
+
+import { Router } from 'express';
+import { getApiMetadata } from '../controllers/versionController';
+
+const router: Router = Router();
+
+router.get('/v1', getApiMetadata);
+
+export default router;
+
+2.2. Controller Implementation
+
+src/controllers/versionController.ts
+
+typescript
+
+import { Request, Response } from 'express';
+
+export const getApiMetadata = (req: Request, res: Response) => {
+  res.setHeader('Content-Type', 'application/vnd.api+json');
+
+  const data = {
+    data: {
+      type: 'metadata',
+      id: 'api-metadata',
+      attributes: {
+        version: 'v1',
+        endpoints: [
+          '/v1/sets',
+          '/v1/sets/{setCode}',
+          '/v1/sets/{setCode}/cards',
+          '/v1/cards',
+          '/v1/cards/{setCode}/{cardNumber}',
+          '/v1/cards/search',
+          '/v1/health',
+          '/v1/games',
+        ],
+        documentation: 'https://docs.yourdomain.com/api/v1',
+      },
+    },
+  };
+
+  res.status(200).json(data);
+};
+
+Explanation:
+
+    Content-Type Header: Set to application/vnd.api+json as per JSON API.
+    Response Structure: Wraps the data in a data object, including type, id, and attributes.
+    Attributes: Contains version, endpoints, and documentation.
+
+2.3. Integrate the Route into the Server
+
+In your main server file (app.ts or server.ts):
+
+typescript
+
+import versionRoutes from './routes/versionRoutes';
+
+// ... other imports and middleware
+
+app.use(versionRoutes);
+
+3. Implementing the /v1/games Endpoint
+3.1. Route Definition
+
+src/routes/gamesRoutes.ts
+
+typescript
+
+import { Router } from 'express';
+import { getGames } from '../controllers/gamesController';
+
+const router: Router = Router();
+
+router.get('/v1/games', getGames);
+
+export default router;
+
+3.2. Controller Implementation
+
+src/controllers/gamesController.ts
+
+typescript
+
+import { Request, Response } from 'express';
+import { getSupportedGames } from '../services/gamesService';
+
+export const getGames = async (req: Request, res: Response) => {
+  try {
+    const games = await getSupportedGames();
+
+    res.setHeader('Content-Type', 'application/vnd.api+json');
+
+    const data = games.map((game) => ({
+      type: 'games',
+      id: game.toLowerCase(),
+      attributes: {
+        name: game,
+      },
+    }));
+
+    res.status(200).json({ data });
+  } catch (error) {
+    console.error('Error retrieving games:', error);
+    res.setHeader('Content-Type', 'application/vnd.api+json');
+    res.status(500).json({
+      errors: [
+        {
+          status: '500',
+          title: 'Internal Server Error',
+          detail: 'An error occurred while retrieving the list of games.',
+        },
+      ],
+    });
+  }
+};
+
+Explanation:
+
+    Asynchronous Function: Uses async/await to handle asynchronous operations.
+    Service Layer: Delegates the retrieval of games to a service function (getSupportedGames).
+    Response Structure: Returns an array of game objects in the data array, each with type, id, and attributes.
+
+3.3. Service Implementation
+
+src/services/gamesService.ts
+
+typescript
+
+export const getSupportedGames = async (): Promise<string[]> => {
+  // In a real application, you might fetch this from a database or configuration file
+  return ['OnePiece', 'Pokemon', 'MagicTheGathering'];
+};
+
+Note: Currently returns a hardcoded list of games. Adjust as needed to fetch from a database or configuration.
+3.4. Integrate the Route into the Server
+
+In your main server file (app.ts or server.ts):
+
+typescript
+
+import gamesRoutes from './routes/gamesRoutes';
+
+// ... other imports and middleware
+
+app.use(gamesRoutes);
+
+4. Testing the Endpoints
+4.1. Testing /v1 Endpoint
+
+Request:
+
+bash
+
+GET http://localhost:3000/v1
+
+Expected Response:
+
+json
+
+{
+  "data": {
+    "type": "metadata",
+    "id": "api-metadata",
+    "attributes": {
+      "version": "v1",
+      "endpoints": [
+        "/v1/sets",
+        "/v1/sets/{setCode}",
+        "/v1/sets/{setCode}/cards",
+        "/v1/cards",
+        "/v1/cards/{setCode}/{cardNumber}",
+        "/v1/cards/search",
+        "/v1/health",
+        "/v1/games"
+      ],
+      "documentation": "https://docs.yourdomain.com/api/v1"
+    }
+  }
+}
+
+Headers:
+
+    Content-Type: application/vnd.api+json
+
+4.2. Testing /v1/games Endpoint
+
+Request:
+
+bash
+
+GET http://localhost:3000/v1/games
+
+Expected Response:
+
+json
+
+{
+  "data": [
+    {
+      "type": "games",
+      "id": "onepiece",
+      "attributes": {
+        "name": "OnePiece"
+      }
+    },
+    {
+      "type": "games",
+      "id": "pokemon",
+      "attributes": {
+        "name": "Pokemon"
+      }
+    },
+    {
+      "type": "games",
+      "id": "magicthegathering",
+      "attributes": {
+        "name": "MagicTheGathering"
+      }
+    }
+  ]
+}
+
+Headers:
+
+    Content-Type: application/vnd.api+json
+
+5. Adhering to JSON API Best Practices
+5.1. Content-Type Header
+
+    Always set the Content-Type header to application/vnd.api+json for both requests and responses.
+
+5.2. Response Structure
+
+    Data Object: Contains either a single resource object or an array of resource objects.
+    Resource Objects: Must include type and id fields.
+    Attributes: Any additional data should be nested under the attributes object.
+
+5.3. Error Handling
+
+    Errors should be returned in an errors array.
+    Each error object may include status, title, and detail.
+
+Example Error Response:
+
+json
+
+{
+  "errors": [
+    {
+      "status": "500",
+      "title": "Internal Server Error",
+      "detail": "An error occurred while retrieving the list of games."
+    }
+  ]
+}
+
+5.4. Consistency
+
+    Use consistent casing and naming conventions throughout your API (e.g., camelCase or snake_case).
+    In the examples, we've used camelCase for JSON keys.
+
+6. Additional Recommendations
+6.1. Environment Variables and Configuration
+
+    Endpoints and Documentation Links: Consider generating the list of endpoints dynamically or storing them in a configuration file.
+    Base URL: If your API's base URL changes, update it in one place to reflect across all endpoints.
+
+6.2. Dynamic Data Retrieval
+
+    Supported Games: Fetch the list of supported games from your database to ensure it stays up-to-date.
+    Versioning: If you have multiple API versions, make sure the version information is accurate.
+
+6.3. Middleware for Content-Type
+
+To ensure the Content-Type header is set for all responses, you can create middleware:
+
+typescript
+
+// src/middleware/jsonApiMiddleware.ts
+
+import { Request, Response, NextFunction } from 'express';
+
+export const setJsonApiContentType = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  res.setHeader('Content-Type', 'application/vnd.api+json');
+  next();
+};
+
+Use in Server:
+
+typescript
+
+import { setJsonApiContentType } from './middleware/jsonApiMiddleware';
+
+app.use(setJsonApiContentType);
+
+6.4. Versioning Strategy
+
+    Route Versioning: Keep versioning in your routes to manage breaking changes.
+    Deprecation Notices: Provide deprecation headers or messages for outdated endpoints.
+
+6.5. Documentation
+
+    Use tools like Swagger or OpenAPI to document your API.
+    Provide examples and usage instructions for developers.
+
+7. Example Project Structure
+
+css
+
+src/
+├── app.ts
+├── controllers/
+│   ├── gamesController.ts
+│   └── versionController.ts
+├── middleware/
+│   └── jsonApiMiddleware.ts
+├── routes/
+│   ├── gamesRoutes.ts
+│   └── versionRoutes.ts
+├── services/
+│   └── gamesService.ts
+└── utils/
+    └── errorHandler.ts
+
+8. Conclusion
+
+You've now implemented the /v1 and /v1/games endpoints following JSON API best practices:
+
+    Consistent Response Format: Adhering to the JSON API specification ensures consistency and predictability for API consumers.
+    Centralized Middleware: Setting headers via middleware simplifies header management.
+    Scalable Structure: The modular approach makes it easier to add new endpoints and features.
+
+Next Steps:
+
+    Implement Remaining Endpoints: Apply the same principles to your other endpoints (/v1/sets, /v1/cards, etc.).
+    Error Handling Enhancements: Standardize error handling across all controllers.
+    Data Validation: Use validation libraries like Joi or Yup to validate incoming requests.
+    Testing: Write unit and integration tests to ensure your endpoints work as expected.
+
+Feel free to reach out if you need assistance with further implementations or have any questions!
+You said:
+included what is this section normall used for?
+ChatGPT
+
+Understanding the included Section in JSON API Responses
+
+Question:
+
+In the context of the JSON API specification, what is the included section normally used for?
+
+Answer:
+
+The included section in a JSON API response is used to include related resources along with the primary data in a single response. This practice, often referred to as "side-loading," helps reduce the number of API calls a client needs to make to retrieve related data, improving efficiency and performance.
+1. Purpose of the included Section
+1.1. Relationship Data
+
+In APIs, resources often have relationships with other resources. For example, a card might belong to a set, or a post might have comments. The included section allows these related resources to be embedded directly in the response.
+1.2. Reducing Network Requests
+
+Without the included section, clients would need to make additional requests to fetch related resources. By including them, you minimize the number of round trips to the server.
+2. Structure of the included Section
+
+The included section is an array of resource objects that are related to the primary data but are not directly part of it.
+
+Example JSON API Response with included Section:
+
+json
+
+{
+  "data": {
+    "type": "cards",
+    "id": "CARD#064#91985f5d",
+    "attributes": {
+      "cardName": "Alvida",
+      "rarity": "Common",
+      "price": 0.13
+    },
+    "relationships": {
+      "set": {
+        "data": {
+          "type": "sets",
+          "id": "OnePiece#OP01"
+        }
+      }
+    }
+  },
+  "included": [
+    {
+      "type": "sets",
+      "id": "OnePiece#OP01",
+      "attributes": {
+        "setName": "Romance Dawn",
+        "releaseDate": "2024-09-01"
+      }
+    }
+  ]
+}
+
+3. When to Use the included Section
+3.1. Client-Side Needs
+
+Use the included section when:
+
+    Clients need related resources: If the client requires related data to display or process, including it reduces additional API calls.
+    Improving Performance: Reduces latency and overhead associated with multiple network requests.
+
+3.2. Sparse Fieldsets and Inclusion of Resources
+
+Clients can request specific related resources using the include query parameter.
+
+Example Request:
+
+bash
+
+GET /v1/cards/OP01/064?include=set
+
+Explanation:
+
+    The client is requesting the card resource and asking the server to include the related set resource.
+
+4. Implementing the included Section
+4.1. Modify the Controller to Support include Parameter
+
+Example Controller Update:
+
+typescript
+
+// src/controllers/cardsController.ts
+
+import { Request, Response } from 'express';
+import { getSetById } from '../services/setsService';
+
+export const getCards = async (req: Request, res: Response) => {
+  try {
+    const { setCode, cardNumber } = req.params;
+    const { include } = req.query;
+
+    // ... existing code to get the card(s)
+
+    const responsePayload: any = { data: cards };
+
+    // Check if 'include' parameter is present
+    if (include === 'set') {
+      // Fetch the related set data
+      const setId = cards[0].attributes.SetID;
+      const set = await getSetById(setId);
+
+      if (set) {
+        responsePayload.included = [
+          {
+            type: 'sets',
+            id: setId,
+            attributes: {
+              setName: set.setName,
+              releaseDate: set.releaseDate,
+              // ... other set attributes
+            },
+          },
+        ];
+      }
+    }
+
+    res.status(200).json(responsePayload);
+  } catch (error) {
+    // ... error handling
+  }
+};
+
+4.2. Defining Relationships in Resource Objects
+
+    Include a relationships object in your resource data to define the relationship between resources.
+
+Example:
+
+json
+
+{
+  "data": {
+    "type": "cards",
+    "id": "CARD#064#91985f5d",
+    "attributes": {
+      "cardName": "Alvida",
+      "rarity": "Common",
+      "price": 0.13
+    },
+    "relationships": {
+      "set": {
+        "data": {
+          "type": "sets",
+          "id": "OnePiece#OP01"
+        }
+      }
+    }
+  }
+}
+
+5. Best Practices for Using the included Section
+5.1. Allow Clients to Specify Included Resources
+
+    Use Query Parameters: Let clients request specific related resources via the include query parameter.
+    Example: GET /v1/cards/OP01/064?include=set
+
+5.2. Avoid Overloading Responses
+
+    Limit Included Resources: Be cautious about including too much data, which can lead to large response sizes and performance issues.
+    Depth of Inclusion: Consider limiting the depth of nested includes.
+
+5.3. Consistency in Relationships
+
+    Uniform Resource Identification: Use consistent type and id values for related resources.
+    Define Relationships Clearly: Make sure that the relationships object accurately represents the associations.
+
+6. Example of Using included in Your API
+6.1. Endpoint Implementation
+
+Request:
+
+bash
+
+GET /v1/cards/OP01/064?include=set
+
+Response:
+
+json
+
+{
+  "data": [
+    {
+      "type": "cards",
+      "id": "CARD#064#91985f5d",
+      "attributes": {
+        "cardName": "Alvida",
+        "rarity": "Common",
+        "price": 0.13
+      },
+      "relationships": {
+        "set": {
+          "data": {
+            "type": "sets",
+            "id": "OnePiece#OP01"
+          }
+        }
+      }
+    }
+  ],
+  "included": [
+    {
+      "type": "sets",
+      "id": "OnePiece#OP01",
+      "attributes": {
+        "setName": "Romance Dawn",
+        "releaseDate": "2024-09-01"
+      }
+    }
+  ]
+}
+
+6.2. Steps to Implement
+
+    Parse the include Parameter:
+        Check if the include query parameter is present in the request.
+        Support multiple includes by parsing comma-separated values (e.g., include=set,creator).
+
+    Fetch Related Resources:
+        Retrieve related resources based on the relationships defined in the primary data.
+        Use existing services or functions to fetch related data.
+
+    Construct the included Array:
+        Format each related resource according to JSON API specifications.
+        Ensure that each resource object in included has type, id, and attributes.
+
+    Include Relationships in Primary Data:
+        Add a relationships object to the primary resource(s) that reference the related resources.
+
+7. Conclusion
+
+The included section in JSON API responses is a powerful feature that allows servers to provide related resources in a single response. By leveraging this feature, you can optimize your API to be more efficient and client-friendly.
+
+Key Takeaways:
+
+    Purpose: The included section is used to embed related resources alongside primary data.
+    Benefits: Reduces the number of API calls needed, improving performance.
+    Implementation: Requires careful structuring of responses and consideration of client needs.
+
+Next Steps:
+
+    Implement included in Your API: Start by identifying relationships in your data models and updating your endpoints to support the include parameter.
+    Update Documentation: Clearly document how clients can use the include parameter and which related resources are available.
+    Performance Testing: Monitor the impact on response sizes and performance to ensure that including related resources doesn't negatively affect your API.
+
+Feel free to ask if you need further assistance with implementing the included section or any other aspects of the JSON API specification!
+
+import { Request, Response } from "express";
+import { QueryCommand } from "@aws-sdk/lib-dynamodb";
+import { docClient } from "../clients/awsClients";
+import { getSetById } from "../services/setsService"; // You'll need to implement this service
+
+export const setCard = async (req: Request, res: Response) => {
+  try {
+    const { setCode, cardNumber } = req.params;
+    const { include } = req.query;
+
+    if (!setCode || !cardNumber) {
+      res.status(400).json({
+        errors: [
+          {
+            status: '400',
+            title: 'Bad Request',
+            detail: 'setCode and cardNumber are required path parameters.',
+          },
+        ],
+      });
+      return;
+    }
+    const gameName = 'OnePiece';
+    const pk = `${gameName}#${setCode.toUpperCase()}`;
+    const skPrefix = `CARD#${cardNumber}#`;
+
+    const params = {
+      TableName: 'collectibles-tcg-reference-data-dev',
+      KeyConditionExpression: 'SetID = :pk AND begins_with(SK, :skPrefix)',
+      ExpressionAttributeValues: {
+        ':pk': pk,
+        ':skPrefix': skPrefix,
+      },
+    };
+
+    const command = new QueryCommand(params);
+    const response = await docClient.send(command);
+
+    if (response.Items && response.Items.length > 0) {
+      const cards = response.Items.map(item => ({
+        type: 'cards',
+        id: item.SK,
+        attributes: {
+          cardName: item.CardName,
+          rarity: item.Rarity,
+          price: item.Price,
+          setName: item.SetName,
+          // other attributes...
+        },
+        relationships: {
+          set: {
+            data: {
+              type: 'sets',
+              id: item.SetID,
+            },
+          },
+        },
+      }));
+
+      const responsePayload: any = { data: cards };
+
+      if (include === 'set') {
+        // Fetch set details
+        const setId = cards[0].relationships.set.data.id;
+        const set = await getSetById(setId);
+
+        if (set) {
+          responsePayload.included = [
+            {
+              type: 'sets',
+              id: setId,
+              attributes: {
+                setName: set.SetName,
+                // other set attributes...
+              },
+            },
+          ];
+        }
+      }
+
+      res.status(200).json(responsePayload);
+    } else {
+      res.status(404).json({
+        errors: [
+          {
+            status: '404',
+            title: 'Not Found',
+            detail: 'Card not found.',
+          },
+        ],
+      });
+    }
+  } catch (error) {
+    console.error('Error retrieving card:', error);
+    res.status(500).json({
+      errors: [
+        {
+          status: '500',
+          title: 'Internal Server Error',
+          detail: 'An error occurred while retrieving the card.',
+        },
+      ],
+    });
+  }
+};
