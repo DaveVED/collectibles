@@ -1,0 +1,8 @@
+{
+    "extends": "@collectibles/tsconfig/base.json",
+    "include": ["."],
+    "compilerOptions": {
+        "module": "NodeNext",
+      },
+    "exclude": ["dist", "build", "node_modules"]
+}
