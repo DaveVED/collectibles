@@ -1,13 +1,13 @@
-import { defineConfig, type Options } from "tsup";
+/*import { defineConfig, type Options } from "tsup";
 
 export default defineConfig((options: Options) => ({
   entryPoints: ["src/app.local.ts"],
   clean: true,
   format: ["cjs"],
   ...options,
-}));
+}));*/
 
-/*import { defineConfig } from "tsup";
+import { defineConfig } from "tsup";
 import packageJson from './package.json'
 
 export default defineConfig((options) => ({
@@ -32,4 +32,4 @@ export default defineConfig((options) => ({
     };
   },
   ...options,
-}));*/
+}));

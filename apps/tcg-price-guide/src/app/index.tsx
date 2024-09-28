@@ -6,7 +6,7 @@ const fetcher = (url: string) => fetch(url).then((res) => res.json());
 // Reusable hook to fetch card data
 function useCardData(setPart: string | null, numberPart: string | null) {
   const { data, error, isLoading } = useSWR(
-    setPart && numberPart ? `http://localhost:5001/v1/cards/${setPart}/${numberPart}` : null,
+    setPart && numberPart ? `https://api-dev.collectibles.studio/v1/cards/${setPart}/${numberPart}/` : null,
     fetcher
   );
 
@@ -205,7 +205,6 @@ function App(): JSX.Element {
       {isLoading && <div>Loading...</div>}
       {isError && <div className="text-red-600">Failed to load data</div>}
 {/* Search Results Section */}
-{/* Search Results Section */}
 {cardData?.data && (
   <div className="max-w-lg sm:max-w-2xl lg:max-w-2xl mt-8 mx-auto p-4 bg-white shadow rounded">
     <h2 className="text-lg font-semibold mb-4">Search Results</h2>
@@ -217,11 +216,7 @@ function App(): JSX.Element {
         >
           {/* Card Image */}
           <img
-            src={
-              index % 2 === 0
-                ? "https://tcgplayer-cdn.tcgplayer.com/product/485087_in_200x200.jpg"
-                : "https://tcgplayer-cdn.tcgplayer.com/product/485246_in_200x200.jpg"
-            }
+            src="https://via.placeholder.com/150" // Hardcoded mock image URL
             alt={card.CardName}
             className="w-32 h-32 object-cover mb-4 sm:mb-0 sm:mr-4 rounded-lg"
           />
@@ -250,7 +245,6 @@ function App(): JSX.Element {
     </div>
   </div>
 )}
-
 
     </div>
   );
