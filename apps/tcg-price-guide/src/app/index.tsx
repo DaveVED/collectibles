@@ -7,7 +7,6 @@ import {
   SearchResultsIndicator,
   DarkModeToggle,
 } from "@collectibles/ui-internal/tcg-price-guide";
-import { FaSun, FaMoon } from "react-icons/fa";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
