@@ -10,9 +10,9 @@ export const SearchResultsIndicator: React.FC<SearchResultsIndicatorProps> = ({
   if (!show) return null;
 
   return (
-    <div className="flex justify-center mt-4">
+    <div className="ui-flex ui-justify-center ui-mt-4">
       <svg
-        className="w-6 h-6 text-gray-400"
+        className="ui-w-6 ui-h-6 ui-text-gray-400"
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"

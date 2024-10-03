@@ -28,13 +28,13 @@ export const SearchForm: React.FC<SearchFormProps> = ({
     >
       <div className="ui-flex ui-flex-col sm:ui-flex-row ui-items-stretch ui-px-4 lg:ui-px-8">
         <div
-          className="ui-relative ui-mb-2 sm:ui-mb-0 sm:ui-mr-0"
+          className="ui-relative ui-mb-2 sm:ui-mb-0 sm:ui-mr-0 ui-flex-grow"
           ref={dropdownRef}
         >
           <button
             id="dropdown-button"
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="ui-flex-shrink-0 ui-z-10 ui-inline-flex ui-items-center ui-justify-between ui-w-full sm:ui-w-auto ui-py-2.5 ui-px-4 ui-text-sm ui-font-medium ui-text-gray-900 ui-bg-gray-100 ui-border ui-border-gray-300 ui-rounded-t-lg sm:ui-rounded-l-lg sm:ui-rounded-r-none sm:ui-border-r-0 ui-hover:bg-gray-200 ui-focus:ring-4 ui-focus:outline-none ui-focus:ring-gray-300"
+            className="ui-flex-shrink-0 ui-z-10 ui-inline-flex ui-items-center ui-justify-between ui-w-full sm:ui-w-auto ui-py-2.5 ui-px-4 ui-text-sm ui-font-medium ui-text-gray-900 ui-bg-gray-100 ui-border ui-border-gray-300 ui-rounded-t-lg sm:ui-rounded-l-lg sm:ui-border-r-0 ui-rounded-r-lg sm:ui-rounded-r-none ui-hover:bg-gray-200 ui-focus:ring-4 ui-focus:outline-none ui-focus:ring-gray-300"
             type="button"
             aria-haspopup="listbox"
             aria-expanded={isDropdownOpen}
@@ -96,13 +96,13 @@ export const SearchForm: React.FC<SearchFormProps> = ({
               id="search-input"
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              className="ui-block ui-w-full ui-p-2.5 ui-text-sm ui-text-gray-900 ui-bg-gray-50 ui-border ui-border-gray-300 ui-rounded sm:ui-rounded-r-none ui-focus:ring-blue-500 ui-focus:border-blue-500"
+              className="ui-block ui-w-full ui-p-2.5 ui-text-sm ui-text-gray-900 ui-bg-gray-50 ui-border ui-border-gray-300 ui-rounded-none sm:ui-rounded-l-none sm:ui-border-r-0 ui-rounded-l-lg sm:ui-rounded-l-none ui-focus:ring-blue-500 ui-focus:border-blue-500"
               placeholder="Enter card number (e.g., OP01-001)"
               required
             />
             <button
               type="submit"
-              className="ui-absolute ui-top-0 ui-right-0 ui-p-2.5 ui-h-full ui-text-sm ui-font-medium ui-text-white ui-bg-blue-700 ui-rounded sm:ui-rounded-r-lg ui-border ui-border-blue-700 ui-border-l-0 ui-hover:bg-blue-800 ui-focus:ring-4 ui-focus:outline-none ui-focus:ring-blue-300"
+              className="ui-absolute ui-top-0 ui-right-0 ui-p-2.5 ui-h-full ui-text-sm ui-font-medium ui-text-white ui-bg-blue-700 ui-rounded-r-lg ui-border ui-border-blue-700 ui-border-l-0 ui-hover:bg-blue-800 ui-focus:ring-4 ui-focus:outline-none ui-focus:ring-blue-300"
             >
               <svg
                 className="ui-w-4 ui-h-4"

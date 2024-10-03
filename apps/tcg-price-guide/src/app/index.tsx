@@ -89,7 +89,7 @@ function App(): JSX.Element {
           <p className="text-sm sm:text-base lg:text-lg text-gray-700 dark:text-gray-300">
             Welcome to the{" "}
             <span className="font-semibold text-primary dark:text-primary-dark">
-              TCG Price Checker
+              TCG Price Guide
             </span>
             . Finding your card’s value is simple. Just select your card’s
             category, enter the card number, and hit search!
