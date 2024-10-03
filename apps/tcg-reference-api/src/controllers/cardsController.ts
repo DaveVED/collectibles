@@ -8,21 +8,21 @@ export const setCard = async (req: Request, res: Response) => {
 
     if (!setCode || !cardNumber) {
       res.status(400).json({
-        message: 'setCode and cardNumber are required path parameters.',
+        message: "setCode and cardNumber are required path parameters.",
       });
       return;
     }
     // Only OnePiece for now
-    const gameName = 'OnePiece';
+    const gameName = "OnePiece";
     const pk = `${gameName}#${setCode.toUpperCase()}`;
     const skPrefix = `CARD#${cardNumber}#`;
 
     const params = {
-      TableName: 'collectibles-tcg-reference-data-dev',
-      KeyConditionExpression: 'SetID = :pk AND begins_with(SK, :skPrefix)',
+      TableName: "collectibles-tcg-reference-data-dev",
+      KeyConditionExpression: "SetID = :pk AND begins_with(SK, :skPrefix)",
       ExpressionAttributeValues: {
-        ':pk': pk,
-        ':skPrefix': skPrefix,
+        ":pk": pk,
+        ":skPrefix": skPrefix,
       },
     };
 
@@ -35,10 +35,10 @@ export const setCard = async (req: Request, res: Response) => {
         data: response.Items,
       });
     } else {
-      res.status(404).json({ message: 'Card not found.' });
+      res.status(404).json({ message: "Card not found." });
     }
   } catch (error) {
-    console.error('Error retrieving card:', error);
-    res.status(500).json({ message: 'Internal server error.' });
+    console.error("Error retrieving card:", error);
+    res.status(500).json({ message: "Internal server error." });
   }
 };

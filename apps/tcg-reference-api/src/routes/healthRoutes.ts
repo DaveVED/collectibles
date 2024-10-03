@@ -1,4 +1,7 @@
-import { healthReadiness, healthLiveness } from "../controllers/healthController";
+import {
+  healthReadiness,
+  healthLiveness,
+} from "../controllers/healthController";
 import { Router } from "express";
 
 const router: Router = Router();

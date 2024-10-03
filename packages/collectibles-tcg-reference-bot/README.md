@@ -12,11 +12,12 @@ Once you have [Nix](https://nixos.org/) installed, you can set up your environme
 
 1. Clone the repository:
 1. Enter the Nix shell, which will install all the necessary dependencies, including Python, Selenium, and AWS CLI:
-    ```bash
-    nix-shell
-    ```
-    
-    This will automatically create and activate a virtual environment (venv) and install the required Python packages specified in requirements.txt.
+
+   ```bash
+   nix-shell
+   ```
+
+   This will automatically create and activate a virtual environment (venv) and install the required Python packages specified in requirements.txt.
 
 1. After entering the Nix shell, you can run any of the scripts in this project as if all dependencies were installed locally.
 
@@ -33,15 +34,15 @@ To add more TCG price guides for scraping, follow these steps:
 
 1. Navigate to the data/price-guides.txt file.
 1. Add the URLs for the new price guides you want to scrape. Each URL should be on its own line. Example:
-    ```
-    https://www.tcgplayer.com/categories/trading-and-collectible-card-games/one-piece-card-game/price-guides/romance-dawn
-    https://www.tcgplayer.com/categories/trading-and-collectible-card-games/one-piece-card-game/price-guides/paramount-war
-    ```
+   ```
+   https://www.tcgplayer.com/categories/trading-and-collectible-card-games/one-piece-card-game/price-guides/romance-dawn
+   https://www.tcgplayer.com/categories/trading-and-collectible-card-games/one-piece-card-game/price-guides/paramount-war
+   ```
 1. After updating the price-guides.txt file, run the scraper script to process the newly added URLs:
-    ```bash
-    chmod +x ./bot/scrapper.py
-    ./bot/scrapper.py
-    ```
+   ```bash
+   chmod +x ./bot/scrapper.py
+   ./bot/scrapper.py
+   ```
 
 The new card data will be scraped and added to the CSV and JSON files in the `data/` folder, and you can upload the data to DynamoDB if you wish (of course you need the correct credentials, but the idea is anyone can take these files and use them in there own database if they wish).
 
@@ -62,6 +63,6 @@ also we should be able to scrape the guides for all the sets we want from the `s
 
 - https://www.tcgplayer.com/sitemap/index.xml
 
-from here we could get all the *one piece* ones for example. 
+from here we could get all the _one piece_ ones for example.
 
 - https://www.tcgplayer.com/sitemap/one-piece-card-game.0.xml

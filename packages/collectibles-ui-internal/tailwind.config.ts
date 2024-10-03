@@ -1,10 +1,14 @@
-// tailwind.config.ts
 import type { Config } from "tailwindcss";
 import sharedConfig from "@collectibles/tailwind-config";
 
-const config: Pick<Config, "content" | "presets" | "theme" | "darkMode"> = {
-  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
-  darkMode: ["class", '[data-mode="dark"]'], // Use 'class' selector strategy  presets: [sharedConfig],
+const config: Pick<
+  Config,
+  "darkMode" | "prefix" | "presets" | "content" | "theme"
+> = {
+  content: ["./src/**/*.tsx"],
+  prefix: "ui-",
+  presets: [sharedConfig],
+  darkMode: "class", // or 'media' if you prefer the system's dark mode
   theme: {
     container: {
       center: true,
@@ -17,7 +21,6 @@ const config: Pick<Config, "content" | "presets" | "theme" | "darkMode"> = {
     },
     extend: {
       colors: {
-        darkBackground: "#1A202C", // Your dark mode background color
         primary: {
           DEFAULT: "#5865F2", // Comfort Purple
           light: "#9AA0F9",
@@ -44,5 +47,4 @@ const config: Pick<Config, "content" | "presets" | "theme" | "darkMode"> = {
     },
   },
 };
-
 export default config;
