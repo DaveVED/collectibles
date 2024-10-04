@@ -115,11 +115,16 @@ def process_row(col_data, url, set_name, logger):
         number = filtered_col_data[5]
         price_str = filtered_col_data[6]
 
-        # Extract set code and card number using regex
-        set_code_match = re.match(r'(OP\d{2})-(\d+)', number)
+        # Check for "Alternate Art", "Manga", and "Parallel" in the product name
+        alternate_art_flag = "(Alternate Art)" in product_name
+        manga_flag = "(Manga)" in product_name
+        parallel_flag = "(Parallel)" in product_name
+
+        # Updated regex to check for both OP and ST set codes
+        set_code_match = re.match(r'(OP\d{2}|ST\d{2})-(\d+)', number)
         if set_code_match:
-            set_code = set_code_match.group(1)  # e.g., OP01
-            card_number = set_code_match.group(2)  # e.g., 064
+            set_code = set_code_match.group(1)  # e.g., OP01 or ST01
+            card_number = set_code_match.group(2)  # e.g., 064 or 021
         else:
             if "DON" in product_name or "DON" in rarity:
                 set_code = "DON"
@@ -149,6 +154,9 @@ def process_row(col_data, url, set_name, logger):
             "Rarity": rarity,
             "Price": price,
             "Source": source,
+            "AlternateArt": alternate_art_flag,  # New flag for Alternate Art
+            "Manga": manga_flag,                # New flag for Manga
+            "Parallel": parallel_flag,          # New flag for Parallel
             "CreatedAt": current_time,
             "UpdatedAt": current_time
         }
@@ -157,10 +165,9 @@ def process_row(col_data, url, set_name, logger):
         logger.error(f"Error parsing row data from URL {url}: {parse_e}")
         return None
 
-
 def scrape_url(driver, url, logger):
     """
-    Scrapes a single URL for card data.
+    Scrapes a single URL for card data and adds a row for the set information.
 
     Parameters:
         driver (webdriver.Firefox): The Selenium WebDriver instance.
@@ -173,7 +180,7 @@ def scrape_url(driver, url, logger):
     all_data = []
     nosql_data = []
     logger.info(f"Processing URL: {url}")
-    tqdm.write(f"\nProcessing URL: {url}") 
+    tqdm.write(f"\nProcessing URL: {url}")
 
     try:
         driver.get(url)
@@ -188,7 +195,7 @@ def scrape_url(driver, url, logger):
 
         table_body = driver.find_element(By.CLASS_NAME, "tcg-table-body")
         rows = table_body.find_elements(By.TAG_NAME, "tr")
-        
+
         set_name = extract_set_name(url)
 
         for row in tqdm(rows, desc="  Processing Rows", leave=False):
@@ -201,10 +208,24 @@ def scrape_url(driver, url, logger):
                 filtered_col_data.insert(0, url)    # Insert the Source URL at the beginning
                 all_data.append(filtered_col_data)
                 nosql_data.append(nosql_entry)
+
+        # Add a row for the set information
+        set_id = f"OnePiece#{set_name.replace(' ', '')}"
+        set_nosql_entry = {
+            "SetID": set_id,
+            "SK": "SET",
+            "SetName": set_name,
+            "CreatedAt": datetime.utcnow().isoformat(),
+            "UpdatedAt": datetime.utcnow().isoformat()
+        }
+
+        # Add set information to NoSQL data
+        nosql_data.append(set_nosql_entry)
+
     except Exception as e:
         logger.error(f"An error occurred while processing {url}: {e}")
         tqdm.write(f"  An error occurred while processing {url}: {e}")
-    
+
     return all_data, nosql_data
 
 

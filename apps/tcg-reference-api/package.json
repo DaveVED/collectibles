@@ -27,6 +27,7 @@
     "devDependencies": {
       "@codegenie/serverless-express": "4.15.0",
       "@collectibles/eslint-config": "workspace:*",
+      "@collectibles/logger": "workspace:*",
       "@collectibles/tsconfig": "workspace:*",
       "@types/body-parser": "^1.19.5",
       "@types/cors": "^2.8.17",
