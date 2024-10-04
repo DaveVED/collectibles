@@ -21,6 +21,23 @@ export const SearchForm: React.FC<SearchFormProps> = ({
   handleCategorySelect,
   dropdownRef,
 }) => {
+  const formatInput = (value: string) => {
+    let formatted = value.replace(/[^a-zA-Z0-9-]/g, "").toUpperCase();
+    if (formatted.length === 4 && !formatted.includes("-")) {
+      formatted = `${formatted}-`;
+    } else if (formatted.length > 4 && !formatted.includes("-")) {
+      formatted = `${formatted.slice(0, 4)}-${formatted.slice(4, 7)}`;
+    }
+    const parts = formatted.split("-");
+    if (parts.length > 2) {
+      formatted = `${parts[0].slice(0, 4)}-${parts[1].slice(0, 3)}`;
+    }
+    if (formatted.length > 8) {
+      formatted = formatted.slice(0, 8);
+    }
+    return formatted;
+  };
+
   return (
     <form
       className="ui-max-w-lg sm:ui-max-w-2xl lg:ui-max-w-2xl ui-mx-auto"
@@ -95,7 +112,10 @@ export const SearchForm: React.FC<SearchFormProps> = ({
               type="text"
               id="search-input"
               value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
+              onChange={(e) => {
+                const formatted = formatInput(e.target.value);
+                setSearchInput(formatted)}
+              }
               className="ui-block ui-w-full ui-p-2.5 ui-text-sm ui-text-gray-900 ui-bg-gray-50 ui-border ui-border-gray-300 ui-rounded-none sm:ui-rounded-l-none sm:ui-border-r-0 ui-rounded-l-lg sm:ui-rounded-l-none ui-focus:ring-blue-500 ui-focus:border-blue-500"
               placeholder="Enter card number (e.g., OP01-001)"
               required
