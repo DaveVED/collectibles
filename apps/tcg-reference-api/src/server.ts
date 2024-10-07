@@ -5,6 +5,8 @@ import cors from "cors";
 import healthRoutes from "./routes/healthRoutes";
 import cardsRoutes from "./routes/cardsRoutes";
 import { log } from "@collectibles/logger";
+import v1Routes from "./routes/v1Routes";
+import setsRoutes from "./routes/setsRoutes";
 
 export const createServer = (): Express => {
   log("setting up app, enhance logger later.");
@@ -14,8 +16,10 @@ export const createServer = (): Express => {
     .use(urlencoded({ extended: true }))
     .use(json())
     .use(cors())
+    .use(v1Routes)
     .use(healthRoutes)
-    .use(cardsRoutes);
+    .use(cardsRoutes)
+    .use(setsRoutes);
 
   return app;
 };

@@ -1,147 +1,209 @@
-import React from "react";
+// SearchForm.tsx
+import React, { useState } from "react";
 
 interface SearchFormProps {
+  handleSubmit: (data: {
+    searchInput: string;
+    category: string;
+    setName: string;
+  }) => void;
   searchInput: string;
   setSearchInput: (value: string) => void;
-  handleSubmit: (e: React.FormEvent) => void;
-  selectedCategory: string;
-  setIsDropdownOpen: (open: boolean) => void;
-  isDropdownOpen: boolean;
-  handleCategorySelect: (category: string) => void;
-  dropdownRef: React.RefObject<HTMLDivElement>;
 }
 
 export const SearchForm: React.FC<SearchFormProps> = ({
+  handleSubmit,
   searchInput,
   setSearchInput,
-  handleSubmit,
-  selectedCategory,
-  setIsDropdownOpen,
-  isDropdownOpen,
-  handleCategorySelect,
-  dropdownRef,
 }) => {
-  const formatInput = (value: string) => {
-    let formatted = value.replace(/[^a-zA-Z0-9-]/g, "").toUpperCase();
-    if (formatted.length === 4 && !formatted.includes("-")) {
-      formatted = `${formatted}-`;
-    } else if (formatted.length > 4 && !formatted.includes("-")) {
-      formatted = `${formatted.slice(0, 4)}-${formatted.slice(4, 7)}`;
+  // State for Set Name filter
+  const [setName, setSetName] = useState<string>("");
+  const [filteredOptions, setFilteredOptions] = useState<string[]>(["Paramount War"]);
+  const [showOptions, setShowOptions] = useState<boolean>(false);
+  const [showFilters, setShowFilters] = useState<boolean>(true);
+
+  // Handle input change for Set Name filter
+  const handleSetNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSetName(value);
+    if (value) {
+      const filtered = ["Paramount War"].filter((option) =>
+        option.toLowerCase().includes(value.toLowerCase())
+      );
+      setFilteredOptions(filtered);
+      setShowOptions(true);
+    } else {
+      setFilteredOptions(["Paramount War"]);
+      setShowOptions(false);
     }
-    const parts = formatted.split("-");
-    if (parts.length > 2) {
-      formatted = `${parts[0].slice(0, 4)}-${parts[1].slice(0, 3)}`;
-    }
-    if (formatted.length > 8) {
-      formatted = formatted.slice(0, 8);
-    }
-    return formatted;
+  };
+
+  // Handle selecting an option from Set Name filter
+  const handleOptionClick = (option: string) => {
+    setSetName(option);
+    setShowOptions(false);
+  };
+
+  // Local onSubmit handler
+  const onSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    handleSubmit({
+      searchInput,
+      category: "One Piece", // Since it's disabled and fixed
+      setName,
+    });
   };
 
   return (
-    <form
-      className="ui-max-w-lg sm:ui-max-w-2xl lg:ui-max-w-2xl ui-mx-auto"
-      onSubmit={handleSubmit}
-    >
-      <div className="ui-flex ui-flex-col sm:ui-flex-row ui-items-stretch ui-px-4 lg:ui-px-8">
-        <div
-          className="ui-relative ui-mb-2 sm:ui-mb-0 sm:ui-mr-0 ui-flex-grow"
-          ref={dropdownRef}
+    <form className="ui-max-w-md ui-mx-auto ui-p-4" onSubmit={onSubmit}>
+      {/* Filters Section */}
+      <div className="ui-mb-6 ui-border ui-border-gray-200 ui-rounded-lg dark:ui-border-gray-700">
+        {/* Filters Header */}
+        <button
+          type="button"
+          className="ui-w-full ui-flex ui-items-center ui-justify-between ui-p-4 ui-bg-gray-100 ui-border-b ui-border-gray-200 ui-rounded-t-lg dark:ui-bg-gray-700 dark:ui-border-gray-600"
+          onClick={() => setShowFilters(!showFilters)}
         >
-          <button
-            id="dropdown-button"
-            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="ui-flex-shrink-0 ui-z-10 ui-inline-flex ui-items-center ui-justify-between ui-w-full sm:ui-w-auto ui-py-2.5 ui-px-4 ui-text-sm ui-font-medium ui-text-gray-900 ui-bg-gray-100 ui-border ui-border-gray-300 ui-rounded-t-lg sm:ui-rounded-l-lg sm:ui-border-r-0 ui-rounded-r-lg sm:ui-rounded-r-none ui-hover:bg-gray-200 ui-focus:ring-4 ui-focus:outline-none ui-focus:ring-gray-300"
-            type="button"
-            aria-haspopup="listbox"
-            aria-expanded={isDropdownOpen}
-          >
-            <span className="ui-truncate">{selectedCategory}</span>
+          <div className="ui-flex ui-items-center">
+            {/* Standard Filter Icon (Funnel) */}
             <svg
-              className="ui-w-2.5 ui-h-2.5 ui-ml-2.5"
+              className="ui-w-6 ui-h-6 ui-text-gray-600 dark:ui-text-gray-300 ui-mr-2"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M3 4h18M7 8h10M5 12h14M9 16h6M4 20h16"
+              />
+            </svg>
+            <h2 className="ui-text-base ui-font-semibold ui-text-gray-900 dark:ui-text-white">
+              Filters
+            </h2>
+          </div>
+          {/* Toggle Icon */}
+          <svg
+            className={`ui-w-5 ui-h-5 ui-transition-transform ${
+              showFilters ? "ui-transform ui-rotate-180" : ""
+            } ui-text-gray-600 dark:ui-text-gray-300`}
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            aria-hidden="true"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+
+        {/* Filters Content */}
+        {showFilters && (
+          <div className="ui-p-4">
+            <div className="ui-flex ui-flex-col ui-space-y-4 md:ui-flex-row md:ui-space-y-0 md:ui-space-x-4">
+              {/* Category Dropdown (Disabled) */}
+              <div className="ui-flex-1">
+                <label
+                  htmlFor="category"
+                  className="ui-block ui-mb-1 ui-text-sm ui-font-medium ui-text-gray-700 dark:ui-text-gray-300"
+                >
+                  Category
+                </label>
+                <select
+                  id="category"
+                  disabled
+                  className="ui-block ui-w-full ui-p-2 ui-text-sm ui-text-gray-500 ui-bg-gray-100 ui-border ui-border-gray-300 ui-rounded-lg dark:ui-bg-gray-600 dark:ui-border-gray-500"
+                >
+                  <option>One Piece</option>
+                </select>
+              </div>
+
+              {/* Set Name Filter */}
+              <div className="ui-flex-1 ui-relative">
+                <label
+                  htmlFor="setName"
+                  className="ui-block ui-mb-1 ui-text-sm ui-font-medium ui-text-gray-700 dark:ui-text-gray-300"
+                >
+                  Set Name?
+                </label>
+                <input
+                  type="text"
+                  id="setName"
+                  className="ui-block ui-w-full ui-p-2 ui-text-sm ui-text-gray-900 ui-border ui-border-gray-300 ui-rounded-lg ui-bg-white dark:ui-bg-gray-700 dark:ui-border-gray-600 dark:ui-placeholder-gray-400 dark:ui-text-white"
+                  placeholder="Type to search..."
+                  value={setName}
+                  onChange={handleSetNameChange}
+                  onFocus={() => {
+                    if (setName) setShowOptions(true);
+                  }}
+                  onBlur={() => {
+                    // Delay to allow click event to register
+                    setTimeout(() => setShowOptions(false), 100);
+                  }}
+                />
+                {showOptions && filteredOptions.length > 0 && (
+                  <ul className="ui-absolute ui-z-10 ui-w-full ui-bg-white ui-border ui-border-gray-300 ui-rounded-lg dark:ui-bg-gray-700 dark:ui-border-gray-600">
+                    {filteredOptions.map((option) => (
+                      <li
+                        key={option}
+                        className="ui-p-2 ui-text-sm ui-text-gray-700 ui-cursor-pointer ui-hover:bg-gray-100 dark:ui-text-gray-300 dark:ui-hover:bg-gray-600"
+                        onClick={() => handleOptionClick(option)}
+                      >
+                        {option}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Search Section */}
+      <div className="ui-mb-6">
+        <label
+          htmlFor="default-search"
+          className="ui-mb-2 ui-text-sm ui-font-medium ui-text-gray-900 ui-sr-only dark:text-white"
+        >
+          Search
+        </label>
+        <div className="ui-relative">
+          <div className="ui-absolute ui-inset-y-0 ui-start-0 ui-flex ui-items-center ui-ps-3 ui-pointer-events-none">
+            <svg
+              className="ui-w-4 ui-h-4 ui-text-gray-500 dark:ui-text-gray-400"
               aria-hidden="true"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
-              viewBox="0 0 10 6"
+              viewBox="0 0 20 20"
             >
               <path
                 stroke="currentColor"
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth="2"
-                d="m1 1 4 4 4-4"
+                d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
               />
             </svg>
-          </button>
-          {isDropdownOpen && (
-            <div
-              className="ui-absolute ui-z-10 ui-mt-1 ui-bg-white ui-divide-y ui-divide-gray-100 ui-rounded-b-lg ui-shadow ui-w-full sm:ui-w-44"
-              role="listbox"
-            >
-              <ul className="ui-py-2 ui-text-sm ui-text-gray-700">
-                <li>
-                  <button
-                    type="button"
-                    onClick={() => handleCategorySelect("One Piece")}
-                    className="ui-inline-flex ui-items-center ui-w-full ui-px-4 ui-py-2 ui-hover:bg-gray-100"
-                    role="option"
-                    aria-selected={selectedCategory === "One Piece"}
-                  >
-                    One Piece
-                  </button>
-                </li>
-                <li>
-                  <button
-                    type="button"
-                    disabled
-                    className="ui-inline-flex ui-items-center ui-w-full ui-px-4 ui-py-2 ui-text-gray-400 ui-cursor-not-allowed"
-                    aria-disabled="true"
-                  >
-                    Pokemon (Coming Soon)
-                  </button>
-                </li>
-              </ul>
-            </div>
-          )}
-        </div>
-
-        {/* Search Input and Button */}
-        <div className="ui-flex ui-flex-col sm:ui-flex-row ui-items-stretch ui-w-full">
-          <div className="ui-relative ui-w-full">
-            <input
-              type="text"
-              id="search-input"
-              value={searchInput}
-              onChange={(e) => {
-                const formatted = formatInput(e.target.value);
-                setSearchInput(formatted)}
-              }
-              className="ui-block ui-w-full ui-p-2.5 ui-text-sm ui-text-gray-900 ui-bg-gray-50 ui-border ui-border-gray-300 ui-rounded-none sm:ui-rounded-l-none sm:ui-border-r-0 ui-rounded-l-lg sm:ui-rounded-l-none ui-focus:ring-blue-500 ui-focus:border-blue-500"
-              placeholder="Enter card number (e.g., OP01-001)"
-              required
-            />
-            <button
-              type="submit"
-              className="ui-absolute ui-top-0 ui-right-0 ui-p-2.5 ui-h-full ui-text-sm ui-font-medium ui-text-white ui-bg-blue-700 ui-rounded-r-lg ui-border ui-border-blue-700 ui-border-l-0 ui-hover:bg-blue-800 ui-focus:ring-4 ui-focus:outline-none ui-focus:ring-blue-300"
-            >
-              <svg
-                className="ui-w-4 ui-h-4"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-                />
-              </svg>
-              <span className="ui-sr-only">Search</span>
-            </button>
           </div>
+          <input
+            type="search"
+            id="default-search"
+            className="ui-block ui-w-full ui-p-4 ui-ps-10 ui-text-sm ui-text-gray-900 ui-border ui-border-gray-300 ui-rounded-lg ui-bg-gray-50 ui-focus:ring-blue-500 ui-focus:border-blue-500 dark:ui-bg-gray-700 dark:ui-border-gray-600 dark:ui-placeholder-gray-400 dark:ui-text-white dark:ui-focus:ring-blue-500 dark:ui-focus:border-blue-500"
+            placeholder="Search Mockups, Logos..."
+            required={!setName} // Make required only if setName is not provided
+            value={searchInput} // Controlled input
+            onChange={(e) => setSearchInput(e.target.value)} // Updates the input state
+          />
+          <button
+            type="submit"
+            className="ui-text-white ui-absolute ui-end-2.5 ui-bottom-2.5 ui-bg-blue-700 ui-hover:bg-blue-800 ui-focus:ring-4 ui-focus:outline-none ui-focus:ring-blue-300 ui-font-medium ui-rounded-lg ui-text-sm ui-px-4 ui-py-2 dark:ui-bg-blue-600 dark:hover:ui-bg-blue-700 dark:ui-focus:ring-blue-800"
+          >
+            Search
+          </button>
         </div>
       </div>
     </form>
