@@ -13,7 +13,6 @@
     "release": "turbo build --filter=docs^... && changeset publish"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.27.1",
     "eslint": "^8.57.0",
     "prettier": "^3.2.5",
     "prettier-plugin-tailwindcss": "^0.5.11",
@@ -23,5 +22,5 @@
   "engines": {
     "node": ">=18"
   },
-  "name": "with-changesets"
+  "name": "tcg-price-guide"
 }

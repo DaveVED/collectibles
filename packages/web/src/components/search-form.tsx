@@ -1,3 +1,4 @@
+import React from "react";
 import { useState, useRef, useEffect } from "react";
 import { ChevronDown, Search as SearchIcon, Filter } from "lucide-react";
 
@@ -16,8 +17,7 @@ export const SearchForm: React.FC<SearchFormProps> = ({ handleSubmit }) => {
 
   // State for the first dropdown
   const [isOpenFirst, setIsOpenFirst] = useState(false);
-  const [selectedOptionFirst, setSelectedOptionFirst] =
-    useState<string>("One Piece");
+  const [selectedOptionFirst, setSelectedOptionFirst] = useState<string>("One Piece");
 
   // State for the second dropdown
   const [isOpenSecond, setIsOpenSecond] = useState(false);
@@ -105,23 +105,23 @@ export const SearchForm: React.FC<SearchFormProps> = ({ handleSubmit }) => {
   };
 
   return (
-    <form className="ui-py-6 ui-px-4 sm:ui-px-6 lg:ui-px-8" onSubmit={onSubmit}>
-      <div className="ui-max-w-5xl ui-mx-auto">
+    <form className="py-6 px-4 sm:px-6 lg:px-8" onSubmit={onSubmit}>
+      <div className="max-w-5xl mx-auto">
         {/* Filters Header */}
         <div
-          className="ui-flex ui-items-center ui-justify-between ui-px-4 ui-py-2 ui-bg-gray-100 dark:ui-bg-gray-700 ui-rounded-lg ui-mb-4 cursor-pointer"
+          className="flex items-center justify-between px-4 py-2 bg-gray-100 dark:bg-gray-700 rounded-lg mb-4 cursor-pointer"
           onClick={toggleFilters}
           ref={filtersRef}
           aria-expanded={isFiltersOpen}
           aria-controls="filters-section"
         >
-          <div className="ui-flex ui-items-center ui-gap-2 ui-text-lg ui-font-semibold ui-text-gray-800 dark:ui-text-gray-200">
-            <Filter className="ui-w-5 ui-h-5" />
+          <div className="flex items-center gap-2 text-lg font-semibold text-gray-800 dark:text-gray-200">
+            <Filter className="w-5 h-5" />
             <span>Filters</span>
           </div>
           <ChevronDown
-            className={`ui-w-5 ui-h-5 ui-transition-transform ${
-              isFiltersOpen ? "ui-rotate-180" : "ui-rotate-0"
+            className={`w-5 h-5 transition-transform ${
+              isFiltersOpen ? "rotate-180" : "rotate-0"
             }`}
           />
         </div>
@@ -130,44 +130,44 @@ export const SearchForm: React.FC<SearchFormProps> = ({ handleSubmit }) => {
         {isFiltersOpen && (
           <div id="filters-section">
             {/* Filters Grid */}
-            <div className="ui-grid ui-grid-cols-1 md:ui-grid-cols-2 lg:ui-grid-cols-3 ui-gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {/* First Dropdown */}
               <div
-                className="ui-relative ui-text-left md:ui-col-span-2 lg:ui-col-span-1"
+                className="relative text-left md:col-span-2 lg:col-span-1"
                 ref={dropdownFirstRef}
               >
                 <button
                   type="button"
                   onClick={toggleDropdownFirst}
-                  className={`ui-w-full ui-px-4 ui-py-2 ui-border ui-rounded ui-flex ui-items-center ui-justify-between ui-font-medium ui-text-sm ${
-                    selectedOptionFirst ? "ui-text-black" : "ui-text-gray-500"
-                  } ui-bg-white ui-border-gray-300 hover:ui-bg-gray-50 dark:ui-bg-gray-800 dark:ui-border-gray-600 dark:ui-text-white`}
+                  className={`w-full px-4 py-2 border rounded flex items-center justify-between font-medium text-sm ${
+                    selectedOptionFirst ? "text-black" : "text-gray-500"
+                  } bg-white border-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-white`}
                 >
-                  <span className="ui-overflow-hidden ui-text-ellipsis ui-whitespace-nowrap">
+                  <span className="overflow-hidden text-ellipsis whitespace-nowrap">
                     {selectedOptionFirst}
                   </span>
-                  <ChevronDown className="ui-ml-2 ui-w-4 ui-h-4" />
+                  <ChevronDown className="ml-2 w-4 h-4" />
                 </button>
 
                 {isOpenFirst && (
-                  <div className="ui-absolute ui-mt-2 ui-bg-white ui-border ui-rounded-lg ui-w-full ui-z-10 ui-shadow-lg dark:ui-bg-gray-800 dark:ui-border-gray-600">
-                    <ul className="ui-text-sm ui-text-gray-700 dark:ui-text-gray-200">
+                  <div className="absolute mt-2 bg-white border rounded-lg w-full z-10 shadow-lg dark:bg-gray-800 dark:border-gray-600">
+                    <ul className="text-sm text-gray-700 dark:text-gray-200">
                       {/* Selectable Option */}
                       <li
-                        className="ui-px-4 ui-py-2 hover:ui-bg-gray-100 hover:ui-cursor-pointer dark:hover:ui-bg-gray-700"
+                        className="px-4 py-2 hover:bg-gray-100 hover:cursor-pointer dark:hover:bg-gray-700"
                         onClick={() => handleOptionClickFirst("One Piece")}
                       >
                         One Piece
                       </li>
                       {/* Divider */}
-                      <div className="ui-border-t ui-border-gray-100 dark:ui-border-gray-600"></div>
+                      <div className="border-t border-gray-100 dark:border-gray-600"></div>
                       {/* Coming Soon Header */}
-                      <div className="ui-py-2 ui-text-center ui-text-gray-500 ui-text-sm dark:ui-text-gray-400">
+                      <div className="py-2 text-center text-gray-500 text-sm dark:text-gray-400">
                         Coming Soon
                       </div>
                       {/* Non-selectable Option */}
                       <li
-                        className="ui-px-4 ui-py-2 ui-text-gray-400 ui-cursor-not-allowed dark:ui-text-gray-600"
+                        className="px-4 py-2 text-gray-400 cursor-not-allowed dark:text-gray-600"
                         onClick={(e) => e.stopPropagation()}
                       >
                         Pokémon
@@ -179,33 +179,33 @@ export const SearchForm: React.FC<SearchFormProps> = ({ handleSubmit }) => {
 
               {/* Second Dropdown with Search */}
               <div
-                className="ui-relative ui-text-left lg:ui-col-span-1"
+                className="relative text-left lg:col-span-1"
                 ref={dropdownSecondRef}
               >
                 <button
                   type="button"
                   onClick={toggleDropdownSecond}
-                  className={`ui-w-full ui-px-4 ui-py-2 ui-border ui-rounded ui-flex ui-items-center ui-justify-between ui-font-medium ui-text-sm ${
-                    selectedOptionSecond ? "ui-text-black" : "ui-text-gray-500"
-                  } ui-bg-white ui-border-gray-300 hover:ui-bg-gray-50 dark:ui-bg-gray-800 dark:ui-border-gray-600 dark:ui-text-white`}
+                  className={`w-full px-4 py-2 border rounded flex items-center justify-between font-medium text-sm ${
+                    selectedOptionSecond ? "text-black" : "text-gray-500"
+                  } bg-white border-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-white`}
                 >
-                  <span className="ui-overflow-hidden ui-text-ellipsis ui-whitespace-nowrap">
+                  <span className="overflow-hidden text-ellipsis whitespace-nowrap">
                     {selectedOptionSecond || "Select a set"}
                   </span>
-                  <ChevronDown className="ui-ml-2 ui-w-4 ui-h-4" />
+                  <ChevronDown className="ml-2 w-4 h-4" />
                 </button>
 
                 {isOpenSecond && (
-                  <div className="ui-absolute ui-mt-2 ui-bg-white ui-border ui-rounded-lg ui-w-full ui-z-10 ui-shadow-lg dark:ui-bg-gray-800 dark:ui-border-gray-600">
+                  <div className="absolute mt-2 bg-white border rounded-lg w-full z-10 shadow-lg dark:bg-gray-800 dark:border-gray-600">
                     {/* Search Input */}
-                    <div className="ui-p-3">
-                      <div className="ui-relative">
-                        <div className="ui-absolute ui-inset-y-0 ui-left-0 ui-flex ui-items-center ui-pl-3 ui-pointer-events-none">
-                          <SearchIcon className="ui-w-4 ui-h-4 ui-text-gray-500 dark:ui-text-gray-400" />
+                    <div className="p-3">
+                      <div className="relative">
+                        <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                          <SearchIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                         </div>
                         <input
                           type="text"
-                          className="ui-block ui-w-full ui-p-2 ui-pl-10 ui-text-sm ui-text-gray-900 ui-border ui-border-gray-300 ui-rounded-lg ui-bg-gray-50 focus:ui-ring-blue-500 focus:ui-border-blue-500 dark:ui-bg-gray-700 dark:ui-border-gray-500 dark:ui-placeholder-gray-400 dark:ui-text-white dark:focus:ui-ring-blue-500 dark:focus:ui-border-blue-500"
+                          className="block w-full p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                           placeholder="Search Sets"
                           value={searchTerm}
                           onChange={(e) => setSearchTerm(e.target.value)}
@@ -214,15 +214,15 @@ export const SearchForm: React.FC<SearchFormProps> = ({ handleSubmit }) => {
                     </div>
 
                     {/* Options List */}
-                    <ul className="ui-max-h-60 ui-overflow-y-auto ui-text-sm ui-text-gray-700 dark:ui-text-gray-200">
+                    <ul className="max-h-60 overflow-y-auto text-sm text-gray-700 dark:text-gray-200">
                       {filteredOptions.length > 0 ? (
                         filteredOptions.map((option) => (
                           <li key={option}>
                             <div
-                              className="ui-flex ui-items-center ui-px-4 ui-py-2 ui-rounded hover:ui-bg-gray-100 dark:hover:ui-bg-gray-700 hover:ui-cursor-pointer"
+                              className="flex items-center px-4 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 hover:cursor-pointer"
                               onClick={() => handleOptionClickSecond(option)}
                             >
-                              <span className="ui-text-sm ui-font-medium ui-text-gray-900 dark:ui-text-gray-300">
+                              <span className="text-sm font-medium text-gray-900 dark:text-gray-300">
                                 {option}
                               </span>
                             </div>
@@ -230,7 +230,7 @@ export const SearchForm: React.FC<SearchFormProps> = ({ handleSubmit }) => {
                         ))
                       ) : (
                         <li>
-                          <div className="ui-flex ui-items-center ui-px-4 ui-py-2 ui-text-gray-500 dark:ui-text-gray-400">
+                          <div className="flex items-center px-4 py-2 text-gray-500 dark:text-gray-400">
                             No results found
                           </div>
                         </li>
@@ -241,13 +241,13 @@ export const SearchForm: React.FC<SearchFormProps> = ({ handleSubmit }) => {
               </div>
 
               {/* Input Field for Card Code */}
-              <div className="ui-relative ui-text-left lg:ui-col-span-1">
+              <div className="relative text-left lg:col-span-1">
                 <input
                   type="text"
                   placeholder="Enter Card Code"
                   value={cardCode}
                   onChange={(e) => setCardCode(e.target.value)}
-                  className="ui-w-full ui-px-4 ui-py-2 ui-border ui-rounded ui-text-sm ui-text-gray-900 ui-bg-white ui-border-gray-300 focus:ui-ring-blue-500 focus:ui-border-blue-500 dark:ui-bg-gray-700 dark:ui-border-gray-600 dark:ui-placeholder-gray-400 dark:ui-text-white dark:focus:ui-ring-blue-500 dark:focus:ui-border-blue-500"
+                  className="w-full px-4 py-2 border rounded text-sm text-gray-900 bg-white border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 />
               </div>
             </div>
@@ -255,21 +255,21 @@ export const SearchForm: React.FC<SearchFormProps> = ({ handleSubmit }) => {
         )}
 
         {/* Search Bar */}
-        <div className="ui-mt-6 ui-max-w-5xl ui-mx-auto">
-          <div className="ui-relative">
-            <div className="ui-absolute ui-inset-y-0 ui-left-0 ui-flex ui-items-center ui-pl-3 ui-pointer-events-none">
-              <SearchIcon className="ui-w-5 ui-h-5 ui-text-gray-500 dark:ui-text-gray-400" />
+        <div className="mt-6 max-w-5xl mx-auto">
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+              <SearchIcon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
             </div>
             <input
               type="search"
               placeholder="Search..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="ui-block ui-w-full ui-p-4 ui-pl-10 ui-text-sm ui-text-gray-900 ui-border ui-border-gray-300 ui-rounded-lg ui-bg-gray-50 focus:ui-ring-blue-500 focus:ui-border-blue-500 dark:ui-bg-gray-700 dark:ui-border-gray-600 dark:ui-placeholder-gray-400 dark:ui-text-white dark:focus:ui-ring-blue-500 dark:focus:ui-border-blue-500"
+              className="block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             />
             <button
               type="submit"
-              className="ui-text-white ui-absolute ui-right-2.5 ui-bottom-2.5 ui-bg-blue-700 hover:ui-bg-blue-800 focus:ui-ring-4 focus:ui-outline-none focus:ui-ring-blue-300 ui-font-medium ui-rounded-lg ui-text-sm ui-px-4 ui-py-2 dark:ui-bg-blue-600 dark:hover:ui-bg-blue-700 dark:ui-focus:ring-blue-800"
+              className="text-white absolute right-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
             >
               Search
             </button>

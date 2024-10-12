@@ -23,40 +23,40 @@ export const SearchResultsGridView: React.FC<OriginalViewProps> = ({
   sortedCardData,
   handleImageClick,
 }) => (
-  <div className="ui-max-w-lg sm:ui-max-w-2xl lg:ui-max-w-4xl ui-mt-8 ui-mx-auto ui-p-4 ui-bg-white dark:ui-bg-gray-800 ui-shadow ui-rounded">
-    <h2 className="ui-text-lg ui-font-semibold ui-mb-4 ui-text-gray-900 dark:ui-text-gray-100">
+  <div className="max-w-lg sm:max-w-2xl lg:max-w-4xl mt-8 mx-auto p-4 bg-white dark:bg-gray-800 shadow rounded">
+    <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">
       Search Results
     </h2>
-    <div className="ui-grid ui-grid-cols-1 ui-gap-6">
+    <div className="grid grid-cols-1 gap-6">
       {sortedCardData.map((card: Card, index: number) => (
         <div
           key={index}
-          className="ui-p-4 ui-bg-gray-50 dark:ui-bg-gray-700 ui-rounded-lg ui-shadow-lg ui-flex ui-flex-col sm:ui-flex-row ui-items-center sm:ui-items-start hover:ui-bg-gray-100 dark:hover:ui-bg-gray-600"
+          className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg shadow-lg flex flex-col sm:flex-row items-center sm:items-start hover:bg-gray-100 dark:hover:bg-gray-600"
         >
           {/* Card Image */}
           <img
             src={card.ImageUrl || "https://via.placeholder.com/150"}
             alt={card.CardName}
-            className="ui-w-32 ui-h-32 ui-object-cover ui-mb-4 sm:ui-mb-0 sm:ui-mr-4 ui-rounded-lg ui-cursor-pointer"
+            className="w-32 h-32 object-cover mb-4 sm:mb-0 sm:mr-4 rounded-lg cursor-pointer"
             onClick={() =>
               handleImageClick(
-                card.ImageUrl || "https://via.placeholder.com/150",
+                card.ImageUrl || "https://via.placeholder.com/150"
               )
             }
           />
 
           {/* Card Details */}
-          <div className="ui-flex-1">
-            <h3 className="ui-text-xl ui-font-bold ui-text-gray-900 dark:ui-text-gray-100 ui-mb-2">
+          <div className="flex-1">
+            <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
               {card.CardName}
             </h3>
-            <p className="ui-text-sm ui-text-gray-600 dark:ui-text-gray-300 ui-mb-1">
+            <p className="text-sm text-gray-600 dark:text-gray-300 mb-1">
               <strong>Rarity:</strong> {card.Rarity}
             </p>
-            <p className="ui-text-sm ui-text-gray-600 dark:ui-text-gray-300 ui-mb-1">
+            <p className="text-sm text-gray-600 dark:text-gray-300 mb-1">
               <strong>Market Price:</strong> ${card.Price.toFixed(2)}
             </p>
-            <p className="ui-text-sm ui-text-gray-600 dark:ui-text-gray-300 ui-mb-1">
+            <p className="text-sm text-gray-600 dark:text-gray-300 mb-1">
               <strong>Set Name:</strong> {card.SetName}
             </p>
 
@@ -65,7 +65,7 @@ export const SearchResultsGridView: React.FC<OriginalViewProps> = ({
               href={card.Source}
               target="_blank"
               rel="noopener noreferrer"
-              className="ui-text-blue-600 dark:ui-text-blue-400 hover:ui-underline ui-text-sm ui-mt-2 ui-inline-block"
+              className="text-blue-600 dark:text-blue-400 hover:underline text-sm mt-2 inline-block"
             >
               View on TCG Player
             </a>

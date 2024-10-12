@@ -1,42 +1,8 @@
 import React, { useState, useEffect } from "react";
-import {
-  UI,
-} from "@repo/core";
-import useSWR from "swr";
+import { DarkModeToggle, Header, Introduction, IntroductionDivider, SearchForm, SearchResults, SearchResultsIndicator } from "../components";
+import { fetcher } from "../hooks/fetcher";
+import { useCardData } from "../hooks";
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
-
-function useCardData(setPart: string | null, numberPart: string | null) {
-  const url =
-    setPart && numberPart
-      ? `https://api-dev.collectibles.studio/v1/cards/${setPart}/${numberPart}`
-      : null; // SWR handles null by not fetching
-
-  const { data, error, isLoading } = useSWR(url, fetcher);
-
-  return {
-    cardData: data,
-    isLoading,
-    isError: error,
-  };
-}
-
-function useSetCards(setName: string | null) {
-  const formattedSetName = setName
-    ? setName.toLowerCase().replace(/\s+/g, "-")
-    : null;
-  const url = formattedSetName
-    ? `https://api-dev.collectibles.studio/v1/sets/name/${formattedSetName}/cards`
-    : null;
-
-  const { data, error, isValidating } = useSWR(url, fetcher);
-
-  return {
-    setCardsData: data,
-    isLoading: isValidating && !data,
-    isError: error,
-  };
-}
 
 function App(): JSX.Element {
   const [isDarkMode, setIsDarkMode] = useState(true);
@@ -93,31 +59,35 @@ function App(): JSX.Element {
   return (
     <div className="min-h-screen bg-white dark:bg-darkBackground transition-colors duration-300 relative">
       {/* Setup Dark mode option */}
-      <UI.DarkModeToggle
+      <DarkModeToggle
         isDarkMode={isDarkMode}
         toggleDarkMode={() => setIsDarkMode(!isDarkMode)}
       />
 
       <div className="container py-8">
         {/* Intro Section. Simple Header and breif Description */}
-        <UI.Header />
-        <UI.Introduction />
+        <Header />
+        <Introduction />
 
         {/* Breake Point */}
-        <UI.IntroductionDivider />
+        <IntroductionDivider />
 
         {/* Search Form */}
-        <UI.SearchForm handleSubmit={handleSubmit} />
+        <SearchForm handleSubmit={handleSubmit} />
 
         {/* Search Results Indicator */}
-        <UI.SearchResultsIndicator show={!!cardData?.data} />
+        <SearchResultsIndicator show={!!cardData?.data} />
 
         {/* Search Results */}
-        {cardData?.data && <UI.SearchResults cardData={cardData} />}
-        {setCardsData?.data && <UI.SearchResults cardData={setCardsData} />}
+        {cardData?.data && <SearchResults cardData={cardData} />}
+        {setCardsData?.data && <SearchResults cardData={setCardsData} />}
       </div>
     </div>
   );
 }
 
 export default App;
+function useSetCards(setName: string | null): { setCardsData: any; isLoading: any; isError: any; } {
+  throw new Error("Function not implemented.");
+}
+
