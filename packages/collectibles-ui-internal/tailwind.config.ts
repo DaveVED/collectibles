@@ -8,7 +8,7 @@ const config: Pick<
   content: ["./src/**/*.tsx"],
   prefix: "ui-",
   presets: [sharedConfig],
-  darkMode: "class", // or 'media' if you prefer the system's dark mode
+  darkMode: ["class", '[data-mode="dark"]'], // should work in both packages
   theme: {
     container: {
       center: true,

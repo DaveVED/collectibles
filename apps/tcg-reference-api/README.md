@@ -1,6 +1,5 @@
 Descriptions and Usage
 
-
 2.  Sets
 
     GET /v1/sets
@@ -157,8 +156,6 @@ Expected Response:
 
 json
 
-
-
 Headers:
 
     Content-Type: application/vnd.api+json
@@ -210,7 +207,6 @@ json
 }
 ]
 }
-
 
 {
 "data": {

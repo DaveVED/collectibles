@@ -1,20 +1,19 @@
 import React from "react";
 
 interface Card {
-    CardName: string;
-    Rarity: string;
-    Price: number;
-    SetName: string;
-    Source: string;
-    SK: string;
-    SetID: string;
-    ImageUrl?: string;
-    AlternateArt?: boolean;
-    Manga?: boolean;
-    Parallel?: boolean;
-  }
+  CardName: string;
+  Rarity: string;
+  Price: number;
+  SetName: string;
+  Source: string;
+  SK: string;
+  SetID: string;
+  ImageUrl?: string;
+  AlternateArt?: boolean;
+  Manga?: boolean;
+  Parallel?: boolean;
+}
 
-  
 interface OriginalViewProps {
   sortedCardData: Card[];
   handleImageClick: (imageUrl: string) => void;
@@ -41,7 +40,7 @@ export const SearchResultsGridView: React.FC<OriginalViewProps> = ({
             className="ui-w-32 ui-h-32 ui-object-cover ui-mb-4 sm:ui-mb-0 sm:ui-mr-4 ui-rounded-lg ui-cursor-pointer"
             onClick={() =>
               handleImageClick(
-                card.ImageUrl || "https://via.placeholder.com/150"
+                card.ImageUrl || "https://via.placeholder.com/150",
               )
             }
           />

@@ -5,7 +5,7 @@ export const Header = (): JSX.Element => {
     <div className="ui-flex ui-items-center ui-justify-center ui-flex-col sm:ui-flex-row sm:ui-justify-between ui-mb-6">
       <div className="ui-flex ui-items-center ui-space-x-2">
         <h1 className="ui-text-2xl sm:ui-text-3xl lg:ui-text-4xl ui-font-display ui-font-bold ui-flex ui-items-center">
-          <span className="ui-text-primary dark:ui-text-white">TCG</span>{" "}
+          <span className="ui-text-primary dark:ui-text-primary">TCG</span>{" "}
           <span className="ui-text-secondary dark:ui-text-gray-300">
             Price Guide
           </span>

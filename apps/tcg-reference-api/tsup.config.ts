@@ -8,7 +8,7 @@ export default defineConfig((options: Options) => ({
 }));*/
 
 import { defineConfig } from "tsup";
-import packageJson from './package.json'
+import packageJson from "./package.json";
 
 export default defineConfig((options) => ({
   entry: {
@@ -24,7 +24,7 @@ export default defineConfig((options) => ({
   outDir: "dist",
   external: ["aws-sdk"], // Exclude aws-sdk
   noExternal: Object.keys(packageJson.dependencies).filter(
-    (dep) => dep !== "aws-sdk" // Exclude any other dependencies if needed
+    (dep) => dep !== "aws-sdk", // Exclude any other dependencies if needed
   ),
   esbuildOptions: (options) => {
     options.banner = {

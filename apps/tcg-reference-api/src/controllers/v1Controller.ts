@@ -9,9 +9,7 @@ export const apiMetadata = (req: Request, res: Response) => {
       id: "api-metadata",
       attributes: {
         version: "v1",
-        endpoints: [
-          "/v1/cards/{setCode}/{cardNumber}"
-        ],
+        endpoints: ["/v1/cards/{setCode}/{cardNumber}"],
         documentation: "https://github.com/DaveVED/collectibles/tree/beta",
       },
     },

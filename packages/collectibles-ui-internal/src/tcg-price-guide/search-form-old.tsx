@@ -70,9 +70,7 @@ export const SearchFormOld: React.FC<SearchFormProps> = ({
     const colonIndex = value.lastIndexOf(":");
     if (colonIndex !== -1) {
       const query = value.slice(colonIndex + 1).toLowerCase();
-      const filtered = commands.filter((cmd) =>
-        cmd.name.startsWith(query)
-      );
+      const filtered = commands.filter((cmd) => cmd.name.startsWith(query));
       setFilteredCommands(filtered);
       setShowCommandDropdown(filtered.length > 0);
       setHighlightedCommandIndex(0);
@@ -91,13 +89,11 @@ export const SearchFormOld: React.FC<SearchFormProps> = ({
       if (e.key === "ArrowDown") {
         e.preventDefault();
         setHighlightedCommandIndex((prev) =>
-          prev < filteredCommands.length - 1 ? prev + 1 : prev
+          prev < filteredCommands.length - 1 ? prev + 1 : prev,
         );
       } else if (e.key === "ArrowUp") {
         e.preventDefault();
-        setHighlightedCommandIndex((prev) =>
-          prev > 0 ? prev - 1 : prev
-        );
+        setHighlightedCommandIndex((prev) => (prev > 0 ? prev - 1 : prev));
       } else if (e.key === "Enter") {
         e.preventDefault();
         if (filteredCommands.length > 0) {
@@ -146,7 +142,7 @@ export const SearchFormOld: React.FC<SearchFormProps> = ({
 
   // Handle additional input changes
   const handleAdditionalInputChange = (
-    e: React.ChangeEvent<HTMLInputElement>
+    e: React.ChangeEvent<HTMLInputElement>,
   ) => {
     setAdditionalInput(e.target.value);
   };
@@ -285,7 +281,10 @@ export const SearchFormOld: React.FC<SearchFormProps> = ({
       {/* Additional Input for Selected Command */}
       {selectedCommand && (
         <div className="ui-mt-4 ui-px-4 lg:ui-px-8">
-          <label htmlFor="additional-input" className="ui-block ui-text-sm ui-font-medium ui-text-gray-700">
+          <label
+            htmlFor="additional-input"
+            className="ui-block ui-text-sm ui-font-medium ui-text-gray-700"
+          >
             {selectedCommand.placeholder}
           </label>
           <input

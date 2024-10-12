@@ -1,29 +1,21 @@
-// App.tsx
-import React, { useState, useEffect, useRef } from "react";
-import useSWR from "swr";
+import React, { useState, useEffect } from "react";
 import {
+  DarkModeToggle,
   Header,
+  Introduction,
+  IntroductionDivider,
   SearchForm,
   SearchResults,
   SearchResultsIndicator,
-  DarkModeToggle,
 } from "@collectibles/ui-internal/tcg-price-guide";
+import useSWR from "swr";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
-/**
- * Custom hook to fetch card data based on setPart and numberPart.
- * If setPart is provided without numberPart, fetches all cards in the set.
- * If both setPart and numberPart are provided, fetches a specific card.
- */
 function useCardData(setPart: string | null, numberPart: string | null) {
-  // Construct the URL based on the presence of setPart and numberPart
-  const url =
-    setPart && numberPart
-      ? `https://api-dev.collectibles.studio/v1/cards/${setPart}/${numberPart}/`
-      : setPart
-      ? `https://api-dev.collectibles.studio/v1/sets/name/${setPart}/cards`
-      : null;
+  const url = setPart && numberPart
+    ? `https://api-dev.collectibles.studio/v1/cards/${setPart}/${numberPart}`
+    : null; // SWR handles null by not fetching
 
   const { data, error, isLoading } = useSWR(url, fetcher);
 
@@ -34,64 +26,37 @@ function useCardData(setPart: string | null, numberPart: string | null) {
   };
 }
 
-function App(): JSX.Element {
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  const [searchInput, setSearchInput] = useState("");
-  const [cardSet, setCardSet] = useState<string | null>(null);
-  const [cardNumber, setCardNumber] = useState<string | null>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+function useSetCards(setName: string | null) {
+  const formattedSetName = setName
+    ? setName.toLowerCase().replace(/\s+/g, "-")
+    : null;
+  const url = formattedSetName
+    ? `https://api-dev.collectibles.studio/v1/sets/name/${formattedSetName}/cards`
+    : null;
 
-  const { cardData, isLoading, isError } = useCardData(cardSet, cardNumber);
+  const { data, error, isValidating } = useSWR(url, fetcher);
 
-  const handleSubmit = (data: {
-    searchInput: string;
-    category: string;
-    setName: string;
-  }) => {
-    const { searchInput, category, setName } = data;
-
-    console.log("Search Input:", searchInput);
-    console.log("Category:", category);
-    console.log("Set Name:", setName);
-
-    if (category === "One Piece") {
-      if (setName) {
-        if (!searchInput) {
-          // When setName is provided and no searchInput, fetch all cards in the set
-          const formattedSetName = setName.toLowerCase().replace(/\s+/g, "-"); // e.g., "Paramount War" -> "paramount-war"
-          setCardSet(formattedSetName);
-          setCardNumber(null);
-          console.log(`Fetching all cards from set: ${formattedSetName}`);
-        } else {
-          // If both setName and searchInput are provided, fetch a specific card
-          const [setPart, numberPart] = searchInput.split("-");
-
-          if (setPart && numberPart) {
-            setCardSet(setPart.toLowerCase());
-            setCardNumber(numberPart);
-            console.log(`Fetching card ${numberPart} from set: ${setPart.toLowerCase()}`);
-          } else {
-            alert("Please enter the card number in the format OPXX-XXX");
-          }
-        }
-      } else {
-        // When setName is not provided, parse searchInput to get setPart and numberPart
-        const [setPart, numberPart] = searchInput.split("-");
-
-        if (setPart && numberPart) {
-          setCardSet(setPart.toLowerCase());
-          setCardNumber(numberPart);
-          console.log(`Fetching card ${numberPart} from set: ${setPart.toLowerCase()}`);
-        } else {
-          alert("Please enter the card number in the format OPXX-XXX");
-        }
-      }
-    } else {
-      // Handle other categories if needed
-      alert("Unsupported category");
-    }
+  return {
+    setCardsData: data,
+    isLoading: isValidating && !data,
+    isError: error,
   };
+}
 
+function App(): JSX.Element {
+
+  const [isDarkMode, setIsDarkMode] = useState(true);
+  // States for setPart and numberPart
+  const [setPart, setSetPart] = useState<string | null>(null);
+  const [numberPart, setNumberPart] = useState<string | null>(null);
+  const [setName, setSetName] = useState<string | null>(null);
+
+  const { cardData, isLoading, isError } = useCardData(setPart, numberPart);
+  const {
+    setCardsData,
+    isLoading: isSetCardsLoading,
+    isError: isSetCardsError,
+  } = useSetCards(setName);
   useEffect(() => {
     if (isDarkMode) {
       document.documentElement.setAttribute("data-mode", "dark");
@@ -102,70 +67,62 @@ function App(): JSX.Element {
     }
   }, [isDarkMode]);
 
-  const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode);
-  };
+  const handleSubmit = (data: {
+    searchInput: string;
+    category: string;
+    setName: string;
+    cardNumber: string;
+  }) => {
+    const { searchInput, category, setName, cardNumber } = data;
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        // Implement any dropdown closing logic if necessary
+    /* Only Option Right now */
+    if (category === "One Piece") {
+      if (setName && cardNumber) {
+          /* We know the set name and card number use the cards API */
+          const [setPart, numberPart] = cardNumber.split("-");
+          /* Todo later we'll create a mapping for set-name and card number for the endpoint. */
+          if (setPart && numberPart) {
+            setSetPart(setPart);
+            setNumberPart(numberPart);
+            setSetName(null);
+          }
+      } else if (setName && !cardNumber) {
+        console.log("HERE DUDE");
+        const formattedSetName = setName.toLowerCase().replace(/\s+/g, "-"); // e.g., "Paramount War" -> "paramount-war"
+        setSetName(formattedSetName);
+        setSetPart(null);
+        setNumberPart(null);
       }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+    }
+
+  };
 
   return (
     <div className="min-h-screen bg-white dark:bg-darkBackground transition-colors duration-300 relative">
-      <DarkModeToggle isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
+      {/* Setup Dark mode option */}
+      <DarkModeToggle
+        isDarkMode={isDarkMode}
+        toggleDarkMode={() => setIsDarkMode(!isDarkMode)}
+      />
 
-      <div className="container py-8 mt-4">
+      <div className="container py-8">
+        {/* Intro Section. Simple Header and breif Description */}
         <Header />
+        <Introduction />
 
-        <div className="max-w-lg sm:max-w-2xl lg:max-w-4xl mx-auto text-center mb-6 px-4 lg:px-12">
-          <p className="text-sm sm:text-base lg:text-lg text-gray-700 dark:text-gray-300">
-            Welcome to the{" "}
-            <span className="font-semibold text-primary dark:text-primary-dark">
-              TCG Price Guide
-            </span>
-            . Finding your card’s value is simple. Just select your card’s
-            category, enter the card number, and hit search!
-          </p>
-        </div>
+        {/* Breake Point */}
+        <IntroductionDivider />
 
-        <hr className="border-t border-gray-300 my-6 w-24 mx-auto" />
+        {/* Search Form */}
+        <SearchForm handleSubmit={handleSubmit}/>
 
-        <SearchForm
-          searchInput={searchInput}
-          setSearchInput={setSearchInput}
-          handleSubmit={handleSubmit}
-        />
+                {/* Search Results Indicator */}
+                <SearchResultsIndicator show={!!cardData?.data} />
 
-        {/* Loading Indicator */}
-        {isLoading && (
-          <div className="flex justify-center items-center mt-8">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500"></div>
-          </div>
-        )}
+{/* Search Results */}
+{cardData?.data && <SearchResults cardData={cardData} />}
+{setCardsData?.data && <SearchResults cardData={setCardsData} />}
 
-        {/* Error Message */}
-        {isError && (
-          <div className="text-red-600 text-center mt-8">
-            Failed to load data
-          </div>
-        )}
-
-        {/* Search Results Indicator */}
-        <SearchResultsIndicator show={!!cardData?.data} />
-
-        {/* Search Results */}
-        {cardData?.data && <SearchResults cardData={cardData} />}
       </div>
     </div>
   );
