@@ -1,15 +1,26 @@
 import React, { useState, useEffect } from "react";
-import { DarkModeToggle, Header, Introduction, IntroductionDivider, SearchForm, SearchResults, SearchResultsIndicator } from "../components";
-import { fetcher } from "../hooks/fetcher";
-import { useCardData } from "../hooks";
-
+import {
+  DarkModeToggle,
+  Header,
+  Introduction,
+  IntroductionDivider,
+  Loading,
+  SearchForm,
+  SearchResults,
+  SearchResultsIndicator,
+  Toast,
+} from "../components";
+import { useCardData, useSetCards } from "../hooks";
 
 function App(): JSX.Element {
   const [isDarkMode, setIsDarkMode] = useState(true);
-  // States for setPart and numberPart
   const [setPart, setSetPart] = useState<string | null>(null);
   const [numberPart, setNumberPart] = useState<string | null>(null);
   const [setName, setSetName] = useState<string | null>(null);
+
+  // State for Toast notifications
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [toastType, setToastType] = useState<"success" | "error" | null>(null);
 
   const { cardData, isLoading, isError } = useCardData(setPart, numberPart);
   const {
@@ -17,6 +28,26 @@ function App(): JSX.Element {
     isLoading: isSetCardsLoading,
     isError: isSetCardsError,
   } = useSetCards(setName);
+
+  // Close Toast
+  const closeToast = () => {
+    setToastMessage(null);
+    setToastType(null);
+  };
+
+  // Effect for handling Toast messages
+  useEffect(() => {
+    if (cardData?.data || setCardsData?.data) {
+      setToastMessage("Data fetched successfully!");
+      setToastType("success");
+    }
+    if (isError || isSetCardsError) {
+      setToastMessage("An error occurred while fetching data.");
+      setToastType("error");
+    }
+  }, [cardData, setCardsData, isError, isSetCardsError]);
+
+  // Dark mode effect
   useEffect(() => {
     if (isDarkMode) {
       document.documentElement.setAttribute("data-mode", "dark");
@@ -28,27 +59,22 @@ function App(): JSX.Element {
   }, [isDarkMode]);
 
   const handleSubmit = (data: {
-    searchInput: string;
     category: string;
     setName: string;
     cardNumber: string;
   }) => {
-    const { searchInput, category, setName, cardNumber } = data;
+    const { category, setName, cardNumber } = data;
 
-    /* Only Option Right now */
     if (category === "One Piece") {
       if (setName && cardNumber) {
-        /* We know the set name and card number use the cards API */
         const [setPart, numberPart] = cardNumber.split("-");
-        /* Todo later we'll create a mapping for set-name and card number for the endpoint. */
         if (setPart && numberPart) {
           setSetPart(setPart);
           setNumberPart(numberPart);
           setSetName(null);
         }
       } else if (setName && !cardNumber) {
-        console.log("HERE DUDE");
-        const formattedSetName = setName.toLowerCase().replace(/\s+/g, "-"); // e.g., "Paramount War" -> "paramount-war"
+        const formattedSetName = setName.toLowerCase().replace(/\s+/g, "-");
         setSetName(formattedSetName);
         setSetPart(null);
         setNumberPart(null);
@@ -56,38 +82,46 @@ function App(): JSX.Element {
     }
   };
 
-  return (
-    <div className="min-h-screen bg-white dark:bg-darkBackground transition-colors duration-300 relative">
-      {/* Setup Dark mode option */}
-      <DarkModeToggle
-        isDarkMode={isDarkMode}
-        toggleDarkMode={() => setIsDarkMode(!isDarkMode)}
-      />
+  // Combined loading and error states
+  const isAnyLoading = isLoading || isSetCardsLoading;
+  const isAnyError = isError || isSetCardsError;
+  const combinedData = cardData || setCardsData; // Updated here
 
-      <div className="container py-8">
-        {/* Intro Section. Simple Header and breif Description */}
+  return (
+    <div className="min-h-screen flex flex-col bg-white dark:bg-darkBackground transition-colors duration-300">
+      {/* Toast Notification */}
+      {toastMessage && toastType && (
+        <Toast message={toastMessage} type={toastType} onClose={closeToast} />
+      )}
+
+      {/* Main content area */}
+      <div className="flex-grow container py-8">
+        <DarkModeToggle
+          isDarkMode={isDarkMode}
+          toggleDarkMode={() => setIsDarkMode(!isDarkMode)}
+        />
         <Header />
         <Introduction />
-
-        {/* Breake Point */}
         <IntroductionDivider />
-
-        {/* Search Form */}
         <SearchForm handleSubmit={handleSubmit} />
+        <SearchResultsIndicator show={!!combinedData?.data} />
 
-        {/* Search Results Indicator */}
-        <SearchResultsIndicator show={!!cardData?.data} />
+        {/* Loading Indicator */}
+        {isAnyLoading && <Loading />}
+
+        {/* Error Message */}
+        {isAnyError && (
+          <div className="text-red-500 text-center py-4">
+            An error occurred while fetching data.
+          </div>
+        )}
 
         {/* Search Results */}
-        {cardData?.data && <SearchResults cardData={cardData} />}
-        {setCardsData?.data && <SearchResults cardData={setCardsData} />}
+        {combinedData?.data && <SearchResults cardData={combinedData} />}
       </div>
+      {/* Footer */}
     </div>
   );
 }
 
 export default App;
-function useSetCards(setName: string | null): { setCardsData: any; isLoading: any; isError: any; } {
-  throw new Error("Function not implemented.");
-}
-

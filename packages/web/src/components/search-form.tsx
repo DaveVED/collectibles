@@ -1,10 +1,8 @@
-import React from "react";
-import { useState, useRef, useEffect } from "react";
-import { ChevronDown, Search as SearchIcon, Filter } from "lucide-react";
+import React, { useState, useRef, useEffect } from "react";
+import { ChevronDown, Filter } from "lucide-react";
 
 interface SearchFormProps {
   handleSubmit: (data: {
-    searchInput: string;
     category: string;
     setName: string;
     cardNumber: string;
@@ -29,14 +27,11 @@ export const SearchForm: React.FC<SearchFormProps> = ({ handleSubmit }) => {
 
   // Filtered options based on search term
   const filteredOptions = options.filter((option) =>
-    option.toLowerCase().includes(searchTerm.toLowerCase()),
+    option.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Card code input state
   const [cardCode, setCardCode] = useState<string>("");
-
-  // Search query state
-  const [searchQuery, setSearchQuery] = useState<string>("");
 
   // Refs for detecting clicks outside of dropdowns
   const dropdownFirstRef = useRef<HTMLDivElement>(null);
@@ -57,14 +52,7 @@ export const SearchForm: React.FC<SearchFormProps> = ({ handleSubmit }) => {
       ) {
         setIsOpenSecond(false);
       }
-      if (
-        filtersRef.current &&
-        !filtersRef.current.contains(event.target as Node)
-      ) {
-        // Optionally close filters when clicking outside
-        // Uncomment the next line if you want to close filters on outside click
-        // setIsFiltersOpen(false);
-      }
+      // Optionally handle other outside clicks here
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
@@ -74,14 +62,9 @@ export const SearchForm: React.FC<SearchFormProps> = ({ handleSubmit }) => {
 
   const toggleDropdownFirst = () => setIsOpenFirst(!isOpenFirst);
   const toggleDropdownSecond = () => setIsOpenSecond(!isOpenSecond);
-
-  const toggleFilters = () => {
-    console.log("Toggle Filters Clicked"); // Debugging statement
-    setIsFiltersOpen(!isFiltersOpen);
-  };
+  const toggleFilters = () => setIsFiltersOpen(!isFiltersOpen);
 
   const handleOptionClickFirst = (option: string) => {
-    // Only "One Piece" is selectable for now
     if (option === "One Piece") {
       setSelectedOptionFirst(option);
     }
@@ -97,7 +80,6 @@ export const SearchForm: React.FC<SearchFormProps> = ({ handleSubmit }) => {
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     handleSubmit({
-      searchInput: searchQuery,
       category: selectedOptionFirst,
       setName: selectedOptionSecond,
       cardNumber: cardCode,
@@ -200,12 +182,9 @@ export const SearchForm: React.FC<SearchFormProps> = ({ handleSubmit }) => {
                     {/* Search Input */}
                     <div className="p-3">
                       <div className="relative">
-                        <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                          <SearchIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                        </div>
                         <input
                           type="text"
-                          className="block w-full p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                          className="block w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                           placeholder="Search Sets"
                           value={searchTerm}
                           onChange={(e) => setSearchTerm(e.target.value)}
@@ -254,26 +233,14 @@ export const SearchForm: React.FC<SearchFormProps> = ({ handleSubmit }) => {
           </div>
         )}
 
-        {/* Search Bar */}
-        <div className="mt-6 max-w-5xl mx-auto">
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-              <SearchIcon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
-            </div>
-            <input
-              type="search"
-              placeholder="Search..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            />
-            <button
-              type="submit"
-              className="text-white absolute right-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-            >
-              Search
-            </button>
-          </div>
+        {/* Submit Button */}
+        <div className="mt-6">
+          <button
+            type="submit"
+            className="w-full px-6 py-3 bg-[#5865F2] hover:bg-[#4752c4] text-white font-semibold rounded-lg shadow-md transition duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[#4752c4] focus:ring-opacity-75"
+          >
+            Search
+          </button>
         </div>
       </div>
     </form>

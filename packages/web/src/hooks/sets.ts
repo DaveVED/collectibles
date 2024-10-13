@@ -1,17 +1,17 @@
 import useSWR from "swr";
 import { fetcher } from "./fetcher";
 
-function useCardData(setPart: string | null, numberPart: string | null) {
-    const url =
-      setPart && numberPart
-        ? `https://api-dev.collectibles.studio/v1/cards/${setPart}/${numberPart}`
-        : null; // SWR handles null by not fetching
-  
-    const { data, error, isLoading } = useSWR(url, fetcher);
-  
+export const useSetCards = (setName: string | null) => {
+    const formattedSetName = setName
+      ? setName.toLowerCase().replace(/\s+/g, "-")
+      : null;
+    const url = formattedSetName
+      ? `https://api-dev.collectibles.studio/v1/sets/name/${formattedSetName}/cards`
+      : null;
+    const { data, error, isValidating } = useSWR(url, fetcher);
     return {
-      cardData: data,
-      isLoading,
+      setCardsData: data,
+      isLoading: isValidating && !data,
       isError: error,
     };
   }
