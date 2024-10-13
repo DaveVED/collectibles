@@ -11,7 +11,14 @@ export const DarkModeToggle: React.FC<DarkModeToggleProps> = ({
   toggleDarkMode,
 }) => {
   return (
-    <div className="fixed top-4 right-4 z-50">
+    <div
+      className="
+        z-50
+        lg:fixed lg:top-4 lg:right-4
+        flex justify-end
+        p-2
+      "
+    >
       <input
         type="checkbox"
         id="dark-toggle"
