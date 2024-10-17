@@ -89,6 +89,23 @@ def extract_set_name(url):
     return "Unknown Set"
 
 
+def determine_game_type(url):
+    """
+    Determines if the URL belongs to One Piece or Pokémon based on its structure.
+
+    Parameters:
+        url (str): The URL to determine the game type.
+
+    Returns:
+        str: The type of game, either 'OnePiece' or 'Pokemon'.
+    """
+    if "one-piece-card-game" in url:
+        return "OnePiece"
+    elif "pokemon" in url:
+        return "Pokemon"
+    return "Unknown"
+
+
 def process_row(col_data, url, set_name, logger, image_tag=None):
     """
     Processes a row of table data and constructs the corresponding NoSQL entry.
@@ -116,34 +133,39 @@ def process_row(col_data, url, set_name, logger, image_tag=None):
         number = filtered_col_data[5]
         price_str = filtered_col_data[6]
 
-        # Check for "Alternate Art", "Manga", and "Parallel" in the product name
-        alternate_art_flag = "(Alternate Art)" in product_name
-        manga_flag = "(Manga)" in product_name
-        parallel_flag = "(Parallel)" in product_name
+        # Determine game type
+        game_type = determine_game_type(url)
 
-        # Updated regex to check for both OP and ST set codes
-        set_code_match = re.match(r'(OP\d{2}|ST\d{2})-(\d+)', number)
-        if set_code_match:
-            set_code = set_code_match.group(1)  # e.g., OP01 or ST01
-            card_number = set_code_match.group(2)  # e.g., 064 or 021
-        else:
-            if "DON" in product_name or "DON" in rarity:
-                set_code = "DON"
-                card_number = "DON"
+        # Check for "Alternate Art", "Manga", and "Parallel" flags for One Piece only
+        alternate_art_flag = "(Alternate Art)" in product_name if game_type == "OnePiece" else False
+        manga_flag = "(Manga)" in product_name if game_type == "OnePiece" else False
+        parallel_flag = "(Parallel)" in product_name if game_type == "OnePiece" else False
+
+        if game_type == "OnePiece":
+            # For One Piece: OP01-ST01 set code format
+            set_code_match = re.match(r'(OP\d{2}|ST\d{2})-(\d+)', number)
+            if set_code_match:
+                set_code = set_code_match.group(1)
+                card_number = set_code_match.group(2)
             else:
                 set_code = "UNKNOWN"
                 card_number = "UNKNOWN"
+        elif game_type == "Pokemon":
+            # For Pokémon: 004/102 set code format
+            set_code_match = re.match(r'(\d+)/\d+', number)
+            card_number = set_code_match.group(1) if set_code_match else "UNKNOWN"
+            set_code = "Pokemon"
 
         # Convert price string to Decimal
         price = Decimal(price_str.replace('$', '').replace(',', ''))
         current_time = datetime.utcnow().isoformat()
 
         # Construct PK and SK
-        pk = f"OnePiece#{set_code}"
+        pk = f"{game_type}#{set_name.replace(' ', '')}"
         sk_base = f"CARD#{card_number}"
 
         # Append a UUID to the SK to ensure uniqueness
-        unique_suffix = str(uuid4())[:8]  # Shortened UUID for readability
+        unique_suffix = str(uuid4())[:8]
         sk = f"{sk_base}#{unique_suffix}"
 
         # Construct the NoSQL entry
@@ -152,22 +174,25 @@ def process_row(col_data, url, set_name, logger, image_tag=None):
             "SK": sk,
             "CardName": product_name,
             "SetName": set_name,
-            "SlugSetName": set_name.replace(' ', '-').lower(),  # Adding slugified set name
             "Rarity": rarity,
             "Price": price,
             "Source": source,
-            "AlternateArt": alternate_art_flag,  # New flag for Alternate Art
-            "Manga": manga_flag,                # New flag for Manga
-            "Parallel": parallel_flag,          # New flag for Parallel
             "CreatedAt": current_time,
             "UpdatedAt": current_time,
-            "TcgImageUrl": image_tag  # Add the image URL here
+            "TcgImageUrl": image_tag,
         }
+
+        # Add One Piece-specific flags
+        if game_type == "OnePiece":
+            nosql_entry["AlternateArt"] = alternate_art_flag
+            nosql_entry["Manga"] = manga_flag
+            nosql_entry["Parallel"] = parallel_flag
 
         return nosql_entry
     except Exception as parse_e:
         logger.error(f"Error parsing row data from URL {url}: {parse_e}")
         return None
+
 
 def scrape_url(driver, url, logger):
     """
@@ -202,42 +227,41 @@ def scrape_url(driver, url, logger):
 
         # Extract set information from the URL
         set_name = extract_set_name(url)
-        set_id = f"OnePiece#{set_name.replace(' ', '')}"  # Creating a unique SetID based on the set name
+        game_type = determine_game_type(url)
+        set_id = f"{game_type}#{set_name.replace(' ', '')}"
 
         # Add a set entry for this URL to the nosql_data
         set_nosql_entry = {
             "SetID": set_id,
             "SK": "SET",
             "SetName": set_name,
-            "SlugSetName": set_name.replace(' ', '-').lower(),  # Adding slugified set name
+            "SlugSetName": set_name.replace(' ', '-').lower(),
             "CreatedAt": datetime.utcnow().isoformat(),
             "UpdatedAt": datetime.utcnow().isoformat(),
-            "SourceURL": url  # Add the source URL as part of the set entry
+            "SourceURL": url
         }
 
-        nosql_data.append(set_nosql_entry)  # Append the set entry to nosql_data
+        nosql_data.append(set_nosql_entry)
 
-        # Process rows in the table (skip first row if it's a header)
+        # Process rows in the table
         for row in rows:
             cols = row.find_elements(By.TAG_NAME, "td")
             if not cols:
                 continue
 
-            # Extract image URL (assuming the second column has an image element)
-            image_element = cols[1].find_element(By.TAG_NAME, 'img')  # Adjust based on the actual HTML structure
-            image_url = image_element.get_attribute('src')  # Get the image src URL
+            # Extract image URL
+            image_element = cols[1].find_element(By.TAG_NAME, 'img')
+            image_url = image_element.get_attribute('src')
 
             col_data = [col.text.strip() for col in cols]
             nosql_entry = process_row(col_data, url, set_name, logger, image_tag=image_url)
 
             if nosql_entry:
-                # Add the row data to the all_data list
-                filtered_col_data = col_data[2:-1]  # Adjust based on headers
-                filtered_col_data.insert(0, url)    # Insert the Source URL at the beginning
+                filtered_col_data = col_data[2:-1]
+                filtered_col_data.insert(0, url)
                 all_data.append(filtered_col_data)
                 nosql_data.append(nosql_entry)
 
-        # Log the set information
         logger.info(f"Set data for {set_name} added with SetID: {set_id}")
 
     except Exception as e:
@@ -245,9 +269,6 @@ def scrape_url(driver, url, logger):
         tqdm.write(f"  An error occurred while processing {url}: {e}")
 
     return all_data, nosql_data
-
-
-
 
 
 def save_to_csv(all_data, headers, csv_path, logger):
@@ -262,7 +283,7 @@ def save_to_csv(all_data, headers, csv_path, logger):
     """
     try:
         df = pd.DataFrame(all_data, columns=headers)
-        df = df.drop(columns=['Condition'])  # Drop the 'Condition' column as per original script
+        df = df.drop(columns=['Condition'])
         df.to_csv(csv_path, index=False)
         logger.info(f"CSV data saved to {csv_path}")
     except Exception as e:
