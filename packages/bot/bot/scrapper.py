@@ -89,7 +89,7 @@ def extract_set_name(url):
     return "Unknown Set"
 
 
-def process_row(col_data, url, set_name, logger):
+def process_row(col_data, url, set_name, logger, image_tag=None):
     """
     Processes a row of table data and constructs the corresponding NoSQL entry.
 
@@ -98,6 +98,7 @@ def process_row(col_data, url, set_name, logger):
         url (str): The source URL of the data.
         set_name (str): The name of the set extracted from the URL.
         logger (logging.Logger): Logger instance for logging errors.
+        image_tag (str): The URL of the card image.
 
     Returns:
         dict or None: A dictionary representing the NoSQL entry, or None if processing fails.
@@ -151,6 +152,7 @@ def process_row(col_data, url, set_name, logger):
             "SK": sk,
             "CardName": product_name,
             "SetName": set_name,
+            "SlugSetName": set_name.replace(' ', '-').lower(),  # Adding slugified set name
             "Rarity": rarity,
             "Price": price,
             "Source": source,
@@ -158,8 +160,10 @@ def process_row(col_data, url, set_name, logger):
             "Manga": manga_flag,                # New flag for Manga
             "Parallel": parallel_flag,          # New flag for Parallel
             "CreatedAt": current_time,
-            "UpdatedAt": current_time
+            "UpdatedAt": current_time,
+            "TcgImageUrl": image_tag  # Add the image URL here
         }
+
         return nosql_entry
     except Exception as parse_e:
         logger.error(f"Error parsing row data from URL {url}: {parse_e}")
@@ -196,37 +200,54 @@ def scrape_url(driver, url, logger):
         table_body = driver.find_element(By.CLASS_NAME, "tcg-table-body")
         rows = table_body.find_elements(By.TAG_NAME, "tr")
 
+        # Extract set information from the URL
         set_name = extract_set_name(url)
+        set_id = f"OnePiece#{set_name.replace(' ', '')}"  # Creating a unique SetID based on the set name
 
-        for row in tqdm(rows, desc="  Processing Rows", leave=False):
-            cols = row.find_elements(By.TAG_NAME, "td")
-            col_data = [col.text.strip() for col in cols]
-            nosql_entry = process_row(col_data, url, set_name, logger)
-            if nosql_entry:
-                # Filter and append data to match headers
-                filtered_col_data = col_data[2:-1]  # Ensure this matches the headers
-                filtered_col_data.insert(0, url)    # Insert the Source URL at the beginning
-                all_data.append(filtered_col_data)
-                nosql_data.append(nosql_entry)
-
-        # Add a row for the set information
-        set_id = f"OnePiece#{set_name.replace(' ', '')}"
+        # Add a set entry for this URL to the nosql_data
         set_nosql_entry = {
             "SetID": set_id,
             "SK": "SET",
             "SetName": set_name,
+            "SlugSetName": set_name.replace(' ', '-').lower(),  # Adding slugified set name
             "CreatedAt": datetime.utcnow().isoformat(),
-            "UpdatedAt": datetime.utcnow().isoformat()
+            "UpdatedAt": datetime.utcnow().isoformat(),
+            "SourceURL": url  # Add the source URL as part of the set entry
         }
 
-        # Add set information to NoSQL data
-        nosql_data.append(set_nosql_entry)
+        nosql_data.append(set_nosql_entry)  # Append the set entry to nosql_data
+
+        # Process rows in the table (skip first row if it's a header)
+        for row in rows:
+            cols = row.find_elements(By.TAG_NAME, "td")
+            if not cols:
+                continue
+
+            # Extract image URL (assuming the second column has an image element)
+            image_element = cols[1].find_element(By.TAG_NAME, 'img')  # Adjust based on the actual HTML structure
+            image_url = image_element.get_attribute('src')  # Get the image src URL
+
+            col_data = [col.text.strip() for col in cols]
+            nosql_entry = process_row(col_data, url, set_name, logger, image_tag=image_url)
+
+            if nosql_entry:
+                # Add the row data to the all_data list
+                filtered_col_data = col_data[2:-1]  # Adjust based on headers
+                filtered_col_data.insert(0, url)    # Insert the Source URL at the beginning
+                all_data.append(filtered_col_data)
+                nosql_data.append(nosql_entry)
+
+        # Log the set information
+        logger.info(f"Set data for {set_name} added with SetID: {set_id}")
 
     except Exception as e:
         logger.error(f"An error occurred while processing {url}: {e}")
         tqdm.write(f"  An error occurred while processing {url}: {e}")
 
     return all_data, nosql_data
+
+
+
 
 
 def save_to_csv(all_data, headers, csv_path, logger):

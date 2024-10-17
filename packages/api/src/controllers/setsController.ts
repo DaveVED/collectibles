@@ -155,3 +155,52 @@ export const setByName = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Internal server error." });
   }
 };
+
+
+export const setCardByCardCode = async (req: Request, res: Response) => {
+  res.setHeader("Content-Type", "application/vnd.api+json");
+
+  try {
+    const { setName, cardCode } = req.params;
+
+    const [setCode, cardNumber] = cardCode.split("-");
+
+    if (!setCode || !cardNumber) {
+      return res.status(400).json({ message: "Invalid card code format." });
+    }
+
+    const formattedSetName = formatSetName(setName);
+    const gameName = "OnePiece";
+
+    // Create the SetID to check against
+    const setID = `${gameName}#${setCode.toUpperCase()}`;
+    const skPrefix = `CARD#${cardNumber}`;
+
+    const params = {
+      TableName: "collectibles-tcg-reference-data-dev",
+      IndexName: "SetName-SK-index",
+      KeyConditionExpression:
+        "SetName = :setName AND begins_with(SK, :skPrefix)",
+      FilterExpression: "SetID = :setID",
+      ExpressionAttributeValues: {
+        ":setName": formattedSetName,
+        ":skPrefix": skPrefix,
+        ":setID": setID,
+      },
+    };
+
+    const command = new QueryCommand(params);
+    const response = await docClient.send(command);
+
+    if (response.Items && response.Items.length > 0) {
+      res.status(200).json({
+        data: response.Items,
+      });
+    } else {
+      res.status(404).json({ message: "Card not found." });
+    }
+  } catch (error) {
+    console.error("Error retrieving card:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+};

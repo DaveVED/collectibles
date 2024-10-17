@@ -10,24 +10,18 @@ import {
   SearchResultsIndicator,
   Toast,
 } from "../components";
-import { useCardData, useSetCards } from "../hooks";
+import { useCards } from "../hooks";
 
 function App(): JSX.Element {
   const [isDarkMode, setIsDarkMode] = useState(true);
-  const [setPart, setSetPart] = useState<string | null>(null);
-  const [numberPart, setNumberPart] = useState<string | null>(null);
   const [setName, setSetName] = useState<string | null>(null);
+  const [cardNumber, setCardNumber] = useState<string | null>(null);
 
   // State for Toast notifications
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [toastType, setToastType] = useState<"success" | "error" | null>(null);
 
-  const { cardData, isLoading, isError } = useCardData(setPart, numberPart);
-  const {
-    setCardsData,
-    isLoading: isSetCardsLoading,
-    isError: isSetCardsError,
-  } = useSetCards(setName);
+  const { data, isLoading, isError } = useCards(setName, cardNumber);
 
   // Close Toast
   const closeToast = () => {
@@ -37,15 +31,15 @@ function App(): JSX.Element {
 
   // Effect for handling Toast messages
   useEffect(() => {
-    if (cardData?.data || setCardsData?.data) {
+    if (data?.data) {
       setToastMessage("Data fetched successfully!");
       setToastType("success");
     }
-    if (isError || isSetCardsError) {
+    if (isError) {
       setToastMessage("An error occurred while fetching data.");
       setToastType("error");
     }
-  }, [cardData, setCardsData, isError, isSetCardsError]);
+  }, [data, isError]);
 
   // Dark mode effect
   useEffect(() => {
@@ -58,34 +52,22 @@ function App(): JSX.Element {
     }
   }, [isDarkMode]);
 
+  // Helper function to format set names
+  const formatSetName = (name: string) => name.toLowerCase().replace(/\s+/g, "-");
+
   const handleSubmit = (data: {
     category: string;
     setName: string;
     cardNumber: string;
   }) => {
-    const { category, setName, cardNumber } = data;
+    const { category, setName: inputSetName, cardNumber: inputCardNumber } = data;
 
     if (category === "One Piece") {
-      if (setName && cardNumber) {
-        const [setPart, numberPart] = cardNumber.split("-");
-        if (setPart && numberPart) {
-          setSetPart(setPart);
-          setNumberPart(numberPart);
-          setSetName(null);
-        }
-      } else if (setName && !cardNumber) {
-        const formattedSetName = setName.toLowerCase().replace(/\s+/g, "-");
-        setSetName(formattedSetName);
-        setSetPart(null);
-        setNumberPart(null);
-      }
+      const formattedSetName = formatSetName(inputSetName);
+      setSetName(formattedSetName);
+      setCardNumber(inputCardNumber || null);
     }
   };
-
-  // Combined loading and error states
-  const isAnyLoading = isLoading || isSetCardsLoading;
-  const isAnyError = isError || isSetCardsError;
-  const combinedData = cardData || setCardsData; // Updated here
 
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-darkBackground transition-colors duration-300">
@@ -104,20 +86,20 @@ function App(): JSX.Element {
         <Introduction />
         <IntroductionDivider />
         <SearchForm handleSubmit={handleSubmit} />
-        <SearchResultsIndicator show={!!combinedData?.data} />
+        <SearchResultsIndicator show={!!data?.data} />
 
         {/* Loading Indicator */}
-        {isAnyLoading && <Loading />}
+        {isLoading && <Loading />}
 
         {/* Error Message */}
-        {isAnyError && (
+        {isError && (
           <div className="text-red-500 text-center py-4">
             An error occurred while fetching data.
           </div>
         )}
 
         {/* Search Results */}
-        {combinedData?.data && <SearchResults cardData={combinedData} />}
+        {data?.data && <SearchResults cardData={data} />}
       </div>
       {/* Footer */}
     </div>

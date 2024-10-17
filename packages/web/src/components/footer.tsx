@@ -7,21 +7,21 @@ export const Footer: React.FC = () => {
       <div className="container mx-auto max-w-screen-xl text-center">
         {/* Informational Text */}
         <p className="my-6 text-gray-400 text-sm sm:text-base md:text-lg">
-          TCG Price Guide pulls its prices from TCG Player (as permitted by their robots.txt) and currently supports only English cards. All card data is securely stored in our datastore. If the pricing source changes in the future, we'll seamlessly switch to a new provider.
+          TCG Price Guide pulls its prices and images from TCG Player (as permitted by their robots.txt) and currently supports only English cards. All card data outside of this is stored in our datastore. If anything with TCG Player changes in the future, or upon there reqeust, changes may be requried.
         </p>
 
         {/* Issue Reporting Text */}
         <p className="mb-6 text-gray-400 text-sm sm:text-base md:text-lg">
-          If you find an issue or have a feature request (e.g., new set or TCG game), please open an issue on GitHub.
+          If you find an issue or have a feature request (e.g., new set or TCG game), please open an issue on [GitHub](https://github.com/DaveVED/tcg-price-guide).
         </p>
 
         {/* Social Icons and Additional Link */}
         <div className="flex flex-col items-center">
           {/* Social Icons */}
-          <div className="flex space-x-4 mb-4"> {/* Reduced space from space-x-6 to space-x-4 */}
+          <div className="flex space-x-4 mb-4">
             {/* GitHub Icon */}
             <a
-              href="https://github.com/your-username" // Replace with your GitHub URL
+              href="https://github.com/DaveVED/tcg-price-guide"
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-400 hover:text-gray-200 transition-colors duration-200"
@@ -30,9 +30,8 @@ export const Footer: React.FC = () => {
               <Github className="w-6 h-6" />
             </a>
 
-            {/* Twitter Icon */}
             <a
-              href="https://twitter.com/your-username" // Replace with your Twitter URL
+              href="https://x.com/DaveVED_"
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-400 hover:text-blue-400 transition-colors duration-200"
@@ -42,7 +41,6 @@ export const Footer: React.FC = () => {
             </a>
           </div>
 
-          {/* Additional Link */}
           <a
             href="https://collectibles.studio"
             target="_blank"
